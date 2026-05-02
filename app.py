@@ -109,7 +109,7 @@ with col_right:
     }
 
     scene_html = build_scene_html(scene_data)
-    st.components.html(
+    st.html(
         scene_html,
         height=620,
         key=f"bloch_scene_{st.session_state.anim_trigger}",
