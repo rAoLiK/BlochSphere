@@ -92,4 +92,4 @@ bloch/
 
 ## Screen shot
 
-![ScreenShot](.\fig\ScreenShot.png)
+![ScreenShot](./fig/ScreenShot.png)
