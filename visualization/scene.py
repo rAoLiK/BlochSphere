@@ -109,7 +109,8 @@ scene.background = new THREE.Color(0x0a0a0a);
 scene.fog = new THREE.Fog(0x0a0a0a, 3, 8);
 
 const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 20);
-camera.position.set(2.2, 1.4, 2.2);
+camera.up.set(0, 0, 1);
+camera.position.set(1.8, -2.0, 2.2);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({{ antialias: true }});
@@ -135,7 +136,6 @@ orbitCtrl.maxDistance = 6;
 orbitCtrl.target.set(0, 0, 0);
 orbitCtrl.autoRotate = true;
 orbitCtrl.autoRotateSpeed = 0.3;
-orbitCtrl.up.set(0, 0, 1);  // Z axis vertical
 
 // ── Materials ────────────────────────────────────────
 const matGlow = new THREE.MeshStandardMaterial({{
@@ -209,13 +209,13 @@ function makeLabel(text, pos, color) {{
     sp.scale.set(0.4, 0.2, 1);
     scene.add(sp);
 }}
-// Pole labels: |0> at +Z (north), |1> at -Z (south)
-makeLabel('|0>', new THREE.Vector3(0, 0, 1.50), '#ff6b00');
-makeLabel('|1>', new THREE.Vector3(0, 0, -1.50), '#ff6b00');
-// Axis labels
-makeLabel('X', new THREE.Vector3(1.55, 0, 0), '#ff3333');
-makeLabel('Y', new THREE.Vector3(0, 1.55, 0), '#33ff33');
-makeLabel('Z', new THREE.Vector3(0, 0, 1.55), '#3388ff');
+// Pole labels — placed away from axis tips
+makeLabel('|0⟩', new THREE.Vector3(0, 0, 1.55), '#ff6b00');
+makeLabel('|1⟩', new THREE.Vector3(0, 0, -1.55), '#ff6b00');
+// Axis labels — placed well beyond arrowheads (which end at +/-1.25)
+makeLabel('X', new THREE.Vector3(1.60, 0, 0), '#ff3333');
+makeLabel('Y', new THREE.Vector3(0, 1.60, 0), '#33ff33');
+makeLabel('Z', new THREE.Vector3(0, 0, 1.75), '#3388ff');
 
 // ── State vector arrow ───────────────────────────────
 const arrowGroup = new THREE.Group();
@@ -253,18 +253,39 @@ function updateAxisHighlight(ax, ay, az, visible) {{
     const l = Math.sqrt(ax*ax + ay*ay + az*az);
     if (l < 0.001) return;
     const dir = new THREE.Vector3(ax, ay, az).normalize();
+
+    // Solid backbone line (subtle)
+    const spinePts = [dir.clone().multiplyScalar(-1.3), dir.clone().multiplyScalar(1.3)];
+    const spineGeo = new THREE.BufferGeometry().setFromPoints(spinePts);
+    axisHL.add(new THREE.Line(spineGeo,
+        new THREE.LineBasicMaterial({{ color: 0xffaa00, transparent: true, opacity: 0.3 }})));
+
+    // Dashed highlight segments
     const dashPts = [];
-    const nDashes = 16;
-    const segLen = 1.25 / nDashes;
+    const nDashes = 20;
+    const segLen = 1.30 / nDashes;
     for (let i = 0; i < nDashes; i += 2) {{
-        const t1 = -1.25 + i * segLen * 2;
-        const t2 = -1.25 + (i + 1) * segLen * 2;
+        const t1 = -1.30 + i * segLen * 2;
+        const t2 = -1.30 + (i + 1) * segLen * 2;
         dashPts.push(dir.clone().multiplyScalar(t1));
         dashPts.push(dir.clone().multiplyScalar(t2));
     }}
     const dg = new THREE.BufferGeometry().setFromPoints(dashPts);
     axisHL.add(new THREE.LineSegments(dg,
-        new THREE.LineBasicMaterial({{ color: 0xffaa00, transparent: true, opacity: 0.7 }})));
+        new THREE.LineBasicMaterial({{ color: 0xffcc00, transparent: true, opacity: 0.9 }})));
+
+    // Arrow cones at both ends to indicate axis direction
+    [1, -1].forEach(function(sign) {{
+        const tip = dir.clone().multiplyScalar(sign * 1.35);
+        const coneGeo = new THREE.ConeGeometry(0.05, 0.14, 8);
+        const cone = new THREE.Mesh(coneGeo,
+            new THREE.MeshStandardMaterial({{ color: 0xffcc00, emissive: 0xff8800,
+                emissiveIntensity: 0.5, roughness: 0.4 }}));
+        cone.position.copy(tip);
+        cone.quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 1, 0), dir.clone().multiplyScalar(sign));
+        axisHL.add(cone);
+    }});
 }}
 
 // ── Trajectory arc ───────────────────────────────────
