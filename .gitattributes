@@ -1,0 +1,2 @@
+fig/gif/screen/tutor_basic_2.gif filter=lfs diff=lfs merge=lfs -text
+fig/gif/screen/tutor_chain_1.gif filter=lfs diff=lfs merge=lfs -text

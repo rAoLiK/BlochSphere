@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "skills": {
+    "addressing-pr-review-comments": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/addressing-pr-review-comments/SKILL.md",
+      "computedHash": "11d322e0a6e73ee46b9d2a03ac1dd00e9a4b0c9e9275db961379bfaccaed139b"
+    },
+    "assessing-external-test-risk": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/assessing-external-test-risk/SKILL.md",
+      "computedHash": "df93a4bce846291326f0c4fb97718506f833df49911aa990fe4f9064178f7d09"
+    },
+    "checking-changes": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/checking-changes/SKILL.md",
+      "computedHash": "9fe33b2e79ec879b22cf557d6ba0e92ddc8a4049661a85ce3b342a2621f59911"
+    },
+    "creating-pull-requests": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/creating-pull-requests/SKILL.md",
+      "computedHash": "eeb089f61e7f2775bfb57513d38f65c16470e314ab3f7a63a479ede7bf9ad9b9"
+    },
+    "debugging-streamlit": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/debugging-streamlit/SKILL.md",
+      "computedHash": "0dc44e0fbc557ea8eba6a81a498102c0979734d4309f4e4e225a58ae9c5641c0"
+    },
+    "discovering-make-commands": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/discovering-make-commands/SKILL.md",
+      "computedHash": "e95b94d4c90863ccfd16b7dc78f8c449bce8d187c3b79ac83e1adeaffd39bce4"
+    },
+    "finalizing-pr": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/finalizing-pr/SKILL.md",
+      "computedHash": "88b630a6d0b4a1203859a827727429d6ae3511deab2a98e33869336a3b301e2c"
+    },
+    "fixing-flaky-e2e-tests": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/fixing-flaky-e2e-tests/SKILL.md",
+      "computedHash": "5d7c80e98742a0c76e0f21071950670f80e578f12959f30472f1a2fc2729e26c"
+    },
+    "fixing-streamlit-ci": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/fixing-streamlit-ci/SKILL.md",
+      "computedHash": "4fc239a28846ae85f4d744a1279eeff4a884e9443ff73cd5243077b6e0a3772f"
+    },
+    "frontend-design": {
+      "source": "anthropics/claude-code",
+      "sourceType": "github",
+      "skillPath": "plugins/frontend-design/skills/frontend-design/SKILL.md",
+      "computedHash": "e8118284a6365753790d44bb2758a6032b3af27fa84696428d9233f2be0f4e78"
+    },
+    "generating-changelog": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/generating-changelog/SKILL.md",
+      "computedHash": "d05a95e512d32fa3f83d48527efe6d95de463723380a597abee1d7f3c9eb5f73"
+    },
+    "implementing-feature": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/implementing-feature/SKILL.md",
+      "computedHash": "f8dbaa199616c3c535765e609196932eeafe89b7a3939621d4d4367498ab9415"
+    },
+    "improving-frontend-coverage": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/improving-frontend-coverage/SKILL.md",
+      "computedHash": "12306cfd41f71d14c6f36ba7a8a4c50d0f4be8ad4981da67baeb80a257bff00e"
+    },
+    "improving-python-coverage": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/improving-python-coverage/SKILL.md",
+      "computedHash": "0cb6281b413b42738ffd2f25b929b95799346d54ae77da93ce17825903a073f0"
+    },
+    "sharing-pr-agent-artifacts": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/sharing-pr-agent-artifacts/SKILL.md",
+      "computedHash": "ecbe6f5a08f7d9a2d5440c590825372aaad1fd25661a36f5d056094f92b0a902"
+    },
+    "understanding-streamlit-architecture": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/understanding-streamlit-architecture/SKILL.md",
+      "computedHash": "61a8412e066b7d077eefdc155cd9e7cb0e7f02ed5eff1b4c2c87e6deae02c93c"
+    },
+    "updating-internal-docs": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/updating-internal-docs/SKILL.md",
+      "computedHash": "3cb937652c17624dc8f29984adca7950aaa7498c47068ad24774ca3e4cfe5fa6"
+    },
+    "writing-spec": {
+      "source": "streamlit/streamlit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/writing-spec/SKILL.md",
+      "computedHash": "d32d3d1c59dc4b2dada8b3b914ad666ce7d113b853f51c59445d856b5083216c"
+    }
+  }
+}
