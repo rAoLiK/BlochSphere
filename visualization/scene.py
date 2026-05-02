@@ -2,11 +2,7 @@ import json
 
 
 def build_scene_html(data: dict) -> str:
-    """Build a complete HTML string with an embedded Three.js Bloch sphere scene.
-
-    Bloch sphere convention: Z axis vertical (|0> at +Z north pole,
-    |1> at -Z south pole). View presented with Z-up orientation.
-    """
+    """Build a complete HTML string with an embedded Three.js Bloch sphere scene."""
     data_json = json.dumps(data)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -15,7 +11,8 @@ def build_scene_html(data: dict) -> str:
 <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{
-        background: #0a0a0a; overflow: hidden;
+        background: #0a0a0a;
+        overflow: hidden;
         font-family: 'JetBrains Mono', 'Courier New', monospace;
     }}
     #container {{ width: 100%; height: 100vh; position: relative; }}
@@ -25,7 +22,10 @@ def build_scene_html(data: dict) -> str:
         content: '';
         position: absolute; top: 0; left: 0; right: 0; bottom: 0;
         background: repeating-linear-gradient(
-            rgba(0,0,0,0.12) 0px, transparent 2px, transparent 4px);
+            rgba(0,0,0,0.12) 0px,
+            transparent 2px,
+            transparent 4px
+        );
         pointer-events: none; z-index: 10;
     }}
 
@@ -39,20 +39,24 @@ def build_scene_html(data: dict) -> str:
         background: #0a0a0a; color: #ff6b00;
         border: 2px solid #ff6b00; padding: 6px 14px;
         font-family: inherit; font-size: 12px; cursor: pointer;
-        text-transform: uppercase; letter-spacing: 1px; min-width: 60px;
+        text-transform: uppercase; letter-spacing: 1px;
+        min-width: 60px;
     }}
     #controls button:hover {{ background: #ff6b00; color: #0a0a0a; }}
     #controls button.active {{ background: #ff6b00; color: #0a0a0a; }}
 
-    #speed-label {{ color: #ff8c00; font-size: 10px; align-self: center;
-        letter-spacing: 1px; min-width: 70px; text-align: center; }}
+    #speed-label {{
+        color: #ff8c00; font-size: 10px; align-self: center; letter-spacing: 1px;
+        min-width: 70px; text-align: center;
+    }}
     #speed-slider {{
         -webkit-appearance: none; appearance: none;
         background: #1a1a1a; border: 2px solid #ff6b00;
         height: 5px; width: 80px; align-self: center; cursor: pointer;
     }}
     #speed-slider::-webkit-slider-thumb {{
-        -webkit-appearance: none; width: 12px; height: 12px; background: #ff6b00;
+        -webkit-appearance: none; width: 12px; height: 12px;
+        background: #ff6b00; border: none;
     }}
     #speed-slider::-moz-range-thumb {{
         width: 12px; height: 12px; background: #ff6b00; border: none; border-radius: 0;
@@ -98,16 +102,14 @@ import {{ OrbitControls }} from 'three/addons/controls/OrbitControls.js';
 
 const DATA = {data_json};
 
-// ── Scene ────────────────────────────────────────────
+// ── Scene setup ──────────────────────────────────────
 const container = document.getElementById('container');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a0a);
 scene.fog = new THREE.Fog(0x0a0a0a, 3, 8);
 
-const camera = new THREE.PerspectiveCamera(
-    45, container.clientWidth / container.clientHeight, 0.1, 20);
-// Position camera for Z-up view: above-right, looking at origin
-camera.position.set(2.0, 2.8, 2.0);
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 20);
+camera.position.set(2.2, 1.4, 2.2);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({{ antialias: true }});
@@ -118,37 +120,31 @@ container.appendChild(renderer.domElement);
 // ── Lighting ─────────────────────────────────────────
 scene.add(new THREE.AmbientLight(0x332211, 1.5));
 const pl1 = new THREE.PointLight(0xff6b00, 30, 10);
-pl1.position.set(3, 3, 4);
+pl1.position.set(3, 3, 3);
 scene.add(pl1);
 const pl2 = new THREE.PointLight(0xff4400, 15, 8);
 pl2.position.set(-3, -2, -3);
 scene.add(pl2);
 
-// ── OrbitControls with Z-up ──────────────────────────
+// ── OrbitControls ────────────────────────────────────
 const orbitCtrl = new OrbitControls(camera, renderer.domElement);
 orbitCtrl.enableDamping = true;
 orbitCtrl.dampingFactor = 0.08;
 orbitCtrl.minDistance = 1.5;
 orbitCtrl.maxDistance = 6;
 orbitCtrl.target.set(0, 0, 0);
-orbitCtrl.up.set(0, 0, 1);  // Z axis is vertical
 orbitCtrl.autoRotate = true;
 orbitCtrl.autoRotateSpeed = 0.3;
+orbitCtrl.up.set(0, 0, 1);  // Z axis vertical
 
 // ── Materials ────────────────────────────────────────
 const matGlow = new THREE.MeshStandardMaterial({{
     color: 0xff6b00, emissive: 0xff4400, emissiveIntensity: 1.2,
     roughness: 0.3, metalness: 0.1
 }});
-const matX = new THREE.MeshStandardMaterial({{
-    color: 0xff3333, emissive: 0xff0000, emissiveIntensity: 0.6, roughness: 0.4
-}});
-const matY = new THREE.MeshStandardMaterial({{
-    color: 0x33ff33, emissive: 0x00ff00, emissiveIntensity: 0.6, roughness: 0.4
-}});
-const matZ = new THREE.MeshStandardMaterial({{
-    color: 0x3388ff, emissive: 0x0044ff, emissiveIntensity: 0.6, roughness: 0.4
-}});
+const matX = new THREE.MeshStandardMaterial({{ color: 0xff3333, emissive: 0xff0000, emissiveIntensity: 0.6, roughness: 0.4 }});
+const matY = new THREE.MeshStandardMaterial({{ color: 0x33ff33, emissive: 0x00ff00, emissiveIntensity: 0.6, roughness: 0.4 }});
+const matZ = new THREE.MeshStandardMaterial({{ color: 0x3388ff, emissive: 0x0044ff, emissiveIntensity: 0.6, roughness: 0.4 }});
 
 // ── Sphere wireframe ─────────────────────────────────
 const sphereGeo = new THREE.SphereGeometry(1, 64, 48);
@@ -168,13 +164,11 @@ function ring(r, rx, ry, rz, col, op) {{
     l.rotation.set(rx, ry, rz);
     return l;
 }}
-// Equatorial ring (XY plane at Z=0)
 scene.add(ring(1, 0, 0, 0, 0x332211, 0.25));
-// Meridian rings (XZ and YZ planes)
 scene.add(ring(1, Math.PI/2, 0, 0, 0x332233, 0.18));
-scene.add(ring(1, 0, Math.PI/2, 0, 0x332222, 0.18));
+scene.add(ring(1, 0, 0, Math.PI/2, 0x332222, 0.18));
 
-// ── Axes (Z is vertical/north-south) ─────────────────
+// ── Axes ─────────────────────────────────────────────
 function createAxis(from, to, mat) {{
     const dir = new THREE.Vector3().subVectors(to, from);
     const len = dir.length();
@@ -191,16 +185,14 @@ function createAxis(from, to, mat) {{
     cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), ax);
     scene.add(cone);
 }}
-// Positive axes extend to 1.25
-createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(1.25,0,0), matX);   // +X
-createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1.25,0), matY);   // +Y
-createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,1.25), matZ);   // +Z (north)
-// Negative axes extend to -1.05
+createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(1.25,0,0), matX);
+createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1.25,0), matY);
+createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,1.25), matZ);
 createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(-1.05,0,0), matX);
 createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,-1.05,0), matY);
-createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,-1.05), matZ);  // -Z (south)
+createAxis(new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,-1.05), matZ);
 
-// ── Labels ───────────────────────────────────────────
+// ── Labels (sprites) ─────────────────────────────────
 function makeLabel(text, pos, color) {{
     const canvas = document.createElement('canvas');
     canvas.width = 128; canvas.height = 64;
@@ -217,13 +209,13 @@ function makeLabel(text, pos, color) {{
     sp.scale.set(0.4, 0.2, 1);
     scene.add(sp);
 }}
-// |0> at north pole (+Z), |1> at south pole (-Z)
+// Pole labels: |0> at +Z (north), |1> at -Z (south)
 makeLabel('|0>', new THREE.Vector3(0, 0, 1.50), '#ff6b00');
 makeLabel('|1>', new THREE.Vector3(0, 0, -1.50), '#ff6b00');
 // Axis labels
-makeLabel('X', new THREE.Vector3(1.60, 0, 0), '#ff3333');
-makeLabel('Y', new THREE.Vector3(0, 1.60, 0), '#33ff33');
-makeLabel('Z', new THREE.Vector3(0, 0, 1.60), '#3388ff');
+makeLabel('X', new THREE.Vector3(1.55, 0, 0), '#ff3333');
+makeLabel('Y', new THREE.Vector3(0, 1.55, 0), '#33ff33');
+makeLabel('Z', new THREE.Vector3(0, 0, 1.55), '#3388ff');
 
 // ── State vector arrow ───────────────────────────────
 const arrowGroup = new THREE.Group();
@@ -251,7 +243,7 @@ function updateArrow(x, y, z) {{
     arrowGroup.add(new THREE.Mesh(dotGeo, matGlow));
 }}
 
-// ── Rotation axis highlight (glowing tube) ───────────
+// ── Rotation axis highlight ──────────────────────────
 const axisHL = new THREE.Group();
 scene.add(axisHL);
 
@@ -261,29 +253,18 @@ function updateAxisHighlight(ax, ay, az, visible) {{
     const l = Math.sqrt(ax*ax + ay*ay + az*az);
     if (l < 0.001) return;
     const dir = new THREE.Vector3(ax, ay, az).normalize();
-
-    // Glowing tube through the sphere
-    const tubeLen = 2.6;
-    const tubeGeo = new THREE.CylinderGeometry(0.018, 0.018, tubeLen, 8);
-    const tubeMat = new THREE.MeshStandardMaterial({{
-        color: 0xffaa00, emissive: 0xff6600, emissiveIntensity: 1.5,
-        roughness: 0.2, transparent: true, opacity: 0.85
-    }});
-    const tube = new THREE.Mesh(tubeGeo, tubeMat);
-    tube.position.set(0, 0, 0);
-    tube.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-    axisHL.add(tube);
-
-    // Small arrow cones at both ends
-    const arrowLen = 0.08;
-    const coneGeo = new THREE.ConeGeometry(0.035, arrowLen, 8);
-    [1, -1].forEach(function(s) {{
-        const cone = new THREE.Mesh(coneGeo, tubeMat);
-        cone.position.copy(dir.clone().multiplyScalar(s * (tubeLen/2 + arrowLen/2)));
-        cone.quaternion.setFromUnitVectors(
-            new THREE.Vector3(0, 1, 0), dir.clone().multiplyScalar(s));
-        axisHL.add(cone);
-    }});
+    const dashPts = [];
+    const nDashes = 16;
+    const segLen = 1.25 / nDashes;
+    for (let i = 0; i < nDashes; i += 2) {{
+        const t1 = -1.25 + i * segLen * 2;
+        const t2 = -1.25 + (i + 1) * segLen * 2;
+        dashPts.push(dir.clone().multiplyScalar(t1));
+        dashPts.push(dir.clone().multiplyScalar(t2));
+    }}
+    const dg = new THREE.BufferGeometry().setFromPoints(dashPts);
+    axisHL.add(new THREE.LineSegments(dg,
+        new THREE.LineBasicMaterial({{ color: 0xffaa00, transparent: true, opacity: 0.7 }})));
 }}
 
 // ── Trajectory arc ───────────────────────────────────
@@ -297,15 +278,15 @@ function updateTrajectory(framePoints, currentIdx) {{
     if (shown.length < 2) return;
     const curve = new THREE.CatmullRomCurve3(
         shown.map(p => new THREE.Vector3(p[0], p[1], p[2])));
-    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.018, 8, false);
+    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
     const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
-        color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 1.0,
-        roughness: 0.2, transparent: true, opacity: 0.9
+        color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 0.8,
+        roughness: 0.2, transparent: true, opacity: 0.85
     }}));
     trajGroup.add(tube);
     for (let i = 0; i < shown.length; i += Math.max(1, Math.floor(shown.length / 20))) {{
         const p = shown[i];
-        const dotGeo = new THREE.SphereGeometry(0.022, 8, 8);
+        const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
         const dot = new THREE.Mesh(dotGeo, matGlow);
         dot.position.set(p[0], p[1], p[2]);
         trajGroup.add(dot);
@@ -325,8 +306,7 @@ let animDone = false;
 if (DATA.bloch_vector) {{
     updateArrow(DATA.bloch_vector[0], DATA.bloch_vector[1], DATA.bloch_vector[2]);
 }}
-const hasAxis = DATA.axis && (DATA.axis[0] || DATA.axis[1] || DATA.axis[2]);
-if (hasAxis) {{
+if (DATA.axis) {{
     updateAxisHighlight(DATA.axis[0], DATA.axis[1], DATA.axis[2], true);
 }}
 
@@ -339,7 +319,7 @@ function updateInfo() {{
 }}
 updateInfo();
 
-// ── Controls ─────────────────────────────────────────
+// ── Controls via addEventListener ────────────────────
 const btnPlay = document.getElementById('btn-play');
 const btnPause = document.getElementById('btn-pause');
 const btnReset = document.getElementById('btn-reset');
@@ -348,7 +328,9 @@ const spdLabel = document.getElementById('speed-label');
 
 btnPlay.addEventListener('click', function() {{
     if (animDone) {{
-        currentFrame = 0; elapsed = 0; animDone = false;
+        currentFrame = 0;
+        elapsed = 0;
+        animDone = false;
         playing = true;
         btnPlay.classList.add('active');
         if (frames.length > 0) {{
@@ -367,7 +349,10 @@ btnPause.addEventListener('click', function() {{
 }});
 
 btnReset.addEventListener('click', function() {{
-    currentFrame = 0; elapsed = 0; playing = false; animDone = false;
+    currentFrame = 0;
+    elapsed = 0;
+    playing = false;
+    animDone = false;
     btnPlay.classList.remove('active');
     if (frames.length > 0) {{
         const f = frames[0];
@@ -381,7 +366,7 @@ spdSlider.addEventListener('input', function() {{
     spdLabel.textContent = 'SPD ' + speed.toFixed(2) + 'x';
 }});
 
-// Init
+// Init state
 btnPlay.classList.add('active');
 spdSlider.value = DATA.speed || 1;
 spdLabel.textContent = 'SPD ' + (DATA.speed || 1).toFixed(2) + 'x';
@@ -402,7 +387,8 @@ function animate() {{
         updateArrow(f[0], f[1], f[2]);
         updateTrajectory(frames, currentFrame);
         if (currentFrame >= frames.length - 1) {{
-            animDone = true; playing = false;
+            animDone = true;
+            playing = false;
             btnPlay.classList.remove('active');
         }}
     }}
@@ -410,6 +396,7 @@ function animate() {{
 }}
 animate();
 
+// ── Resize ───────────────────────────────────────────
 window.addEventListener('resize', () => {{
     camera.aspect = container.clientWidth / container.clientHeight;
     camera.updateProjectionMatrix();
