@@ -24,14 +24,6 @@ def render_state_display(state_text: str, prob0: float, prob1: float,
                 <div class="data-value">{state_text}</div>
             </div>
             <div class="data-item">
-                <div class="data-label">P(|0⟩)</div>
-                <div class="data-value">{p0_pct:.1f}%</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">P(|1⟩)</div>
-                <div class="data-value">{p1_pct:.1f}%</div>
-            </div>
-            <div class="data-item">
                 <div class="data-label">Gate Applied</div>
                 <div class="data-value">{gate_label}</div>
             </div>
@@ -48,19 +40,18 @@ def render_state_display(state_text: str, prob0: float, prob1: float,
         unsafe_allow_html=True,
     )
 
-    # Probability bars
+    # Probability bars — prominent, with embedded labels
+    p0_flex = max(p0_pct, 2)
+    p1_flex = max(p1_pct, 2)
     st.markdown(
         f"""
-        <div style="display:flex; gap:6px; margin-top:4px; font-size:10px;
-                    color:#777; text-transform:uppercase; letter-spacing:1px;">
-            <div style="flex:{max(p0_pct, 0.5):.0f}; background:#ff6b00; height:3px;
-                        transition: flex 0.3s;"></div>
-            <div style="flex:{max(p1_pct, 0.5):.0f}; background:#2a2a2a; height:3px;
-                        transition: flex 0.3s;"></div>
-        </div>
-        <div style="display:flex; gap:6px; font-size:10px; color:#555; margin-bottom:0.5rem;">
-            <span>|0⟩ {p0_pct:.1f}%</span>
-            <span style="margin-left:auto;">{p1_pct:.1f}% |1⟩</span>
+        <div class="prob-container">
+            <div class="prob-bar-p0" style="flex:{p0_flex:.0f};">
+                <span class="prob-bar-label p0">|0&rang; {p0_pct:.1f}%</span>
+            </div>
+            <div class="prob-bar-p1" style="flex:{p1_flex:.0f};">
+                <span class="prob-bar-label p1">{p1_pct:.1f}% |1&rang;</span>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -68,20 +59,9 @@ def render_state_display(state_text: str, prob0: float, prob1: float,
 
 
 def render_gate_matrix(gate_name: str, matrix_tex: str):
-    """Display the matrix form of the currently selected gate."""
+    """Display the LaTeX matrix form of the gate."""
     if not matrix_tex:
         return
 
     st.markdown("### GATE MATRIX")
-    st.markdown(
-        f"""
-        <div class="matrix-display">
-            <div style="color:#777; font-size:0.65rem; text-transform:uppercase;
-                        letter-spacing:1px; margin-bottom:4px;">
-                {gate_name}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
     st.latex(matrix_tex)

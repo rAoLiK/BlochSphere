@@ -209,12 +209,12 @@ function makeLabel(text, pos, color) {{
     scene.add(sp);
 }}
 // Pole labels — placed away from axis tips
-makeLabel('|0⟩', new THREE.Vector3(0, 1.50, 0), '#ff6b00');
-makeLabel('|1⟩', new THREE.Vector3(0, -1.50, 0), '#ff6b00');
+makeLabel('|0⟩', new THREE.Vector3(0, 1.35, 0), '#ff6b00');
+makeLabel('|1⟩', new THREE.Vector3(0, -1.20, 0), '#ff6b00');
 // Axis labels — placed well beyond arrowheads (which end at +/-1.25)
-makeLabel('X', new THREE.Vector3(1.60, 0, 0), '#ff3333');
-makeLabel('Y', new THREE.Vector3(0, 1.60, 0), '#33ff33');
-makeLabel('Z', new THREE.Vector3(0, 0, 1.60), '#3388ff');
+makeLabel('X', new THREE.Vector3(1.45, 0, 0), '#ff3333');
+makeLabel('Y', new THREE.Vector3(0, 1.45, 0), '#33ff33');
+makeLabel('Z', new THREE.Vector3(0, 0, 1.45), '#3388ff');
 
 // ── State vector arrow ───────────────────────────────
 const arrowGroup = new THREE.Group();
@@ -326,7 +326,20 @@ const spdSlider = document.getElementById('speed-slider');
 const spdLabel = document.getElementById('speed-label');
 
 btnPlay.addEventListener('click', function() {{
-    playing = !playing;
+    if (animDone) {{
+        // Replay from beginning
+        currentFrame = 0;
+        elapsed = 0;
+        animDone = false;
+        playing = true;
+        if (frames.length > 0) {{
+            updateArrow(frames[0][0], frames[0][1], frames[0][2]);
+            updateTrajectory(frames, 0);
+        }}
+    }} else {{
+        // Toggle play/pause
+        playing = !playing;
+    }}
     btnPlay.classList.toggle('active', playing);
 }});
 
@@ -338,9 +351,9 @@ btnPause.addEventListener('click', function() {{
 btnReset.addEventListener('click', function() {{
     currentFrame = 0;
     elapsed = 0;
-    playing = true;
+    playing = false;
     animDone = false;
-    btnPlay.classList.add('active');
+    btnPlay.classList.remove('active');
     if (frames.length > 0) {{
         const f = frames[0];
         updateArrow(f[0], f[1], f[2]);
