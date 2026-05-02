@@ -327,20 +327,19 @@ const spdLabel = document.getElementById('speed-label');
 
 btnPlay.addEventListener('click', function() {{
     if (animDone) {{
-        // Replay from beginning
         currentFrame = 0;
         elapsed = 0;
         animDone = false;
         playing = true;
+        btnPlay.classList.add('active');
         if (frames.length > 0) {{
             updateArrow(frames[0][0], frames[0][1], frames[0][2]);
             updateTrajectory(frames, 0);
         }}
     }} else {{
-        // Toggle play/pause
         playing = !playing;
+        btnPlay.classList.toggle('active', playing);
     }}
-    btnPlay.classList.toggle('active', playing);
 }});
 
 btnPause.addEventListener('click', function() {{

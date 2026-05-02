@@ -42,8 +42,9 @@ if "anim_trigger" not in st.session_state:
 
 # ── Header ──────────────────────────────────────────────────────────
 st.markdown(
-    "<h1 style='font-size:3.5rem;margin-bottom:0.0rem;'>BLOCH SPHERE</h1>"
-    "<p style='color:#999;font-size:0.85rem;letter-spacing:2px;margin-top:0;'>"
+    "<h1 style='margin-bottom:0;'>BLOCH SPHERE</h1>"
+    "<p style='color:#666;font-size:0.78rem;letter-spacing:2px;margin-top:2px;"
+    "margin-bottom:0.5rem;'>"
     "SINGLE-QUBIT GATE EVOLUTION &mdash; INTERACTIVE 3D VISUALIZATION"
     "</p>",
     unsafe_allow_html=True,
