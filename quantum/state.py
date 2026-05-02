@@ -32,26 +32,30 @@ class BlochState:
         return (float(abs(alpha) ** 2), float(abs(beta) ** 2))
 
     def to_ket_text(self) -> str:
-        """Formatted Dirac notation string."""
+        """Formatted Dirac notation string with global phase factored out."""
         alpha = complex(self.ket[0, 0])
         beta = complex(self.ket[1, 0])
-        a_mag, a_phase = abs(alpha), np.angle(alpha)
+        # Factor out global phase: if alpha is the dominant component,
+        # make alpha real; otherwise make beta real
+        if abs(alpha) > abs(beta):
+            g_phase = np.angle(alpha)
+        else:
+            g_phase = np.angle(beta)
+        alpha = alpha * np.exp(-1j * g_phase)
+        beta = beta * np.exp(-1j * g_phase)
+        a_mag = abs(alpha)
         b_mag, b_phase = abs(beta), np.angle(beta)
 
         parts = []
         threshold = 1e-10
 
         if a_mag > threshold:
-            a_str = f"{a_mag:.3f}"
-            if abs(a_phase) > threshold:
-                a_str += f"e^{{i{a_phase:.2f}}}"
-            parts.append(f"{a_str}|0⟩")
+            parts.append(f"{a_mag:.3f}|0⟩")
 
         if b_mag > threshold:
             b_str = f"{b_mag:.3f}"
-            rel_phase = b_phase - a_phase
-            if abs(rel_phase) > threshold:
-                b_str += f"e^{{i{rel_phase:.2f}}}"
+            if abs(b_phase) > threshold:
+                b_str += f"e^{{i{b_phase:.2f}}}"
             parts.append(f"{b_str}|1⟩")
 
         if not parts:
