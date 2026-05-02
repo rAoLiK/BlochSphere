@@ -89,3 +89,7 @@ bloch/
 - [x] Cross-platform (Windows + Linux)
 - [x] Conda environment management
 - [x] Git version control
+
+## Screen shot
+
+![ScreenShot](fig\ScreenShot.png)

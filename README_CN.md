@@ -89,3 +89,9 @@ bloch/
 - [x] 跨平台运行（Windows + Linux）
 - [x] Conda 环境管理
 - [x] Git 版本控制
+
+## 屏幕截图
+
+## Screen shot
+
+![ScreenShot](fig\ScreenShot.png)
