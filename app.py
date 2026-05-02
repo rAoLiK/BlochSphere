@@ -109,10 +109,11 @@ with col_right:
     }
 
     scene_html = build_scene_html(scene_data)
-    st.html(
+    # Force re-render by embedding trigger in HTML
+    scene_html += f"\n<!-- trigger:{st.session_state.anim_trigger} -->\n"
+    st.components.v1.html(
         scene_html,
         height=620,
-        key=f"bloch_scene_{st.session_state.anim_trigger}",
     )
 
 with col_left:
