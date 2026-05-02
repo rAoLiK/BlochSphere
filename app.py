@@ -136,12 +136,17 @@ with col_right:
         "speed": controls["speed"],
     }
 
+    import base64
+
     scene_html = build_scene_html(scene_data)
     scene_html += f"\n<!-- trigger:{st.session_state.anim_trigger} -->\n"
-    st.components.v1.html(
-        scene_html,
-        height=620,
+    html_b64 = base64.b64encode(scene_html.encode()).decode()
+    iframe = (
+        f'<iframe src="data:text/html;base64,{html_b64}" '
+        f'width="100%" height="620" '
+        f'style="border:2px solid #332211;"></iframe>'
     )
+    st.html(iframe)
 
 with col_left:
     state = st.session_state.bloch_state
