@@ -19,7 +19,7 @@ def _rotation_gate(axis: tuple[float, float, float], theta: float,
 
 def gate_x() -> dict:
     return _rotation_gate(
-        (1, 0, 0), -np.pi, "X",
+        (1, 0, 0), np.pi, "X",
         r"X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}"
     )
 
@@ -33,7 +33,7 @@ def gate_y() -> dict:
 
 def gate_z() -> dict:
     return _rotation_gate(
-        (0, 0, 1), -np.pi, "Z",
+        (0, 0, 1), np.pi, "Z",
         r"Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}"
     )
 
@@ -49,7 +49,7 @@ def gate_h() -> dict:
 def gate_rx(theta: float) -> dict:
     t = theta
     return _rotation_gate(
-        (1, 0, 0), -t, f"Rx({t:.2f})",
+        (1, 0, 0), t, f"Rx({t:.2f})",
         r"R_x(\theta) = \begin{pmatrix} "
         r"\cos\frac{\theta}{2} & -i\sin\frac{\theta}{2} \\ "
         r"-i\sin\frac{\theta}{2} & \cos\frac{\theta}{2} \end{pmatrix}"
@@ -69,7 +69,7 @@ def gate_ry(theta: float) -> dict:
 def gate_rz(theta: float) -> dict:
     t = theta
     return _rotation_gate(
-        (0, 0, 1), -t, f"Rz({t:.2f})",
+        (0, 0, 1), t, f"Rz({t:.2f})",
         r"R_z(\theta) = \begin{pmatrix} "
         r"e^{-i\theta/2} & 0 \\ 0 & e^{i\theta/2} \end{pmatrix}"
     )
