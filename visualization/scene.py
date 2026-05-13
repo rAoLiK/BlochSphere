@@ -292,35 +292,12 @@ function updateAxisHighlight(ax, ay, az, visible) {{
 const trajGroup = new THREE.Group();
 scene.add(trajGroup);
 
-function updateTrajectory(framePoints, currentIdx) {{
-    while (trajGroup.children.length > 0) trajGroup.remove(trajGroup.children[0]);
-    if (!framePoints || framePoints.length < 2) return;
-    const shown = framePoints.slice(0, currentIdx + 1);
-    if (shown.length < 2) return;
-    const curve = new THREE.CatmullRomCurve3(
-        shown.map(p => new THREE.Vector3(p[0], p[1], p[2])));
-    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
-    const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
-        color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 0.8,
-        roughness: 0.2, transparent: true, opacity: 0.85
-    }}));
-    trajGroup.add(tube);
-    for (let i = 0; i < shown.length; i += Math.max(1, Math.floor(shown.length / 20))) {{
-        const p = shown[i];
-        const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
-        const dot = new THREE.Mesh(dotGeo, matGlow);
-        dot.position.set(p[0], p[1], p[2]);
-        trajGroup.add(dot);
-    }}
-}}
-
 // ── Animation state ──────────────────────────────────
-const frames = DATA.chain_frames && DATA.chain_frames.length > 0
-    ? DATA.chain_frames : (DATA.frames || []);
-const boundaries = DATA.chain_boundaries || [];
-const chainLabels = DATA.chain_labels || [];
-const chainDetails = DATA.chain_details || [];
-const isChain = boundaries.length > 0;
+const frames = DATA.frames || [];
+const boundaries = DATA.boundaries || [];
+const labels = DATA.labels || [];
+const details = DATA.details || [];
+const hasGates = boundaries.length > 0;
 
 let currentFrame = 0;
 let playing = true;
@@ -334,20 +311,13 @@ let currentGateIdx = 0;
 if (DATA.bloch_vector) {{
     updateArrow(DATA.bloch_vector[0], DATA.bloch_vector[1], DATA.bloch_vector[2]);
 }}
-if (isChain && chainDetails.length > 0) {{
-    const d = chainDetails[0];
+if (hasGates && details.length > 0) {{
+    const d = details[0];
     updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
-}} else if (DATA.axis) {{
-    updateAxisHighlight(DATA.axis[0], DATA.axis[1], DATA.axis[2], true);
 }}
 
 function updateInfo() {{
-    let g;
-    if (isChain && chainLabels.length > 0) {{
-        g = chainLabels[currentGateIdx] || '-';
-    }} else {{
-        g = DATA.gate_label || '-';
-    }}
+    const g = hasGates && labels.length > 0 ? (labels[currentGateIdx] || '-') : '-';
     const bv = DATA.bloch_vector || [0,0,0];
     document.getElementById('info-gate').textContent = g;
     document.getElementById('info-bloch').textContent =
@@ -357,7 +327,7 @@ updateInfo();
 
 // ── Chain gate segment tracking ──────────────────────
 function getGateIndex(frameIdx) {{
-    if (!isChain || boundaries.length === 0) return 0;
+    if (!hasGates || boundaries.length === 0) return 0;
     for (let i = boundaries.length - 1; i >= 0; i--) {{
         if (frameIdx >= boundaries[i]) return i;
     }}
@@ -430,14 +400,10 @@ btnPlay.addEventListener('click', function() {{
         btnPlay.classList.add('active');
         if (frames.length > 0) {{
             updateArrow(frames[0][0], frames[0][1], frames[0][2]);
-            if (isChain) {{
-                updateChainTrajectory(0);
-                if (chainDetails.length > 0) {{
-                    const d = chainDetails[0];
-                    updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
-                }}
-            }} else {{
-                updateTrajectory(frames, 0);
+            updateChainTrajectory(0);
+            if (details.length > 0) {{
+                const d = details[0];
+                updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
             }}
         }}
     }} else {{
@@ -461,14 +427,10 @@ btnReset.addEventListener('click', function() {{
     if (frames.length > 0) {{
         const f = frames[0];
         updateArrow(f[0], f[1], f[2]);
-        if (isChain) {{
-            updateChainTrajectory(0);
-            if (chainDetails.length > 0) {{
-                const d = chainDetails[0];
-                updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
-            }}
-        }} else {{
-            updateTrajectory(frames, 0);
+        updateChainTrajectory(0);
+        if (details.length > 0) {{
+            const d = details[0];
+            updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
         }}
     }}
 }});
@@ -497,20 +459,18 @@ function animate() {{
         const f = frames[currentFrame];
         updateArrow(f[0], f[1], f[2]);
 
-        if (isChain) {{
+        if (hasGates) {{
             const newGateIdx = getGateIndex(currentFrame);
             if (newGateIdx !== currentGateIdx) {{
                 currentGateIdx = newGateIdx;
-                if (currentGateIdx < chainDetails.length) {{
-                    const d = chainDetails[currentGateIdx];
+                if (currentGateIdx < details.length) {{
+                    const d = details[currentGateIdx];
                     updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
                 }}
             }}
             updateChainTrajectory(currentFrame);
             document.getElementById('info-gate').textContent =
-                chainLabels[currentGateIdx] || '-';
-        }} else {{
-            updateTrajectory(frames, currentFrame);
+                labels[currentGateIdx] || '-';
         }}
 
         document.getElementById('info-bloch').textContent =
