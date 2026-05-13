@@ -105,72 +105,61 @@ def render_controls() -> dict:
 CHAIN_GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 
 
-def _gate_display_name(gate_cfg: dict) -> str:
-    """Return compact display name for a gate config."""
-    if gate_cfg["type"] in ("Rx", "Ry", "Rz"):
-        return f"{gate_cfg['type']}({np.degrees(gate_cfg['theta']):.0f}°)"
-    return gate_cfg["type"]
+def _build_chain_html(chain_gates: list[dict]) -> str:
+    """Build horizontal chain flow HTML: |ψ₀⟩ → [G1] → [G2] → ... → |ψf⟩"""
+    parts = ['<span class="chain-node chain-state">|ψ₀⟩</span>']
+    for i, g in enumerate(chain_gates):
+        label = g["type"]
+        if g["type"] in ("Rx", "Ry", "Rz"):
+            label += f'({g["theta"]:.2f})'
+        parts.append('<span class="chain-arrow">→</span>')
+        parts.append(f'<span class="chain-node chain-gate" data-gate="{i}">{label}</span>')
+    parts.append('<span class="chain-arrow">→</span>')
+    parts.append('<span class="chain-node chain-state">|ψf⟩</span>')
+    return '<div class="chain-flow">' + "".join(parts) + '</div>'
+
+
+def _compute_intermediate_states(bloch_state, chain_gates: list[dict]) -> list[dict]:
+    """Compute quantum state after each gate in the chain."""
+    from quantum import BlochState, get_gate
+    states = [{"idx": 0, "gate": "-", "ket": bloch_state.to_ket_text(),
+               "vec": bloch_state.bloch_vector()}]
+    current = bloch_state
+    for i, g in enumerate(chain_gates):
+        gate = get_gate(g["type"], g.get("theta", 0.0))
+        current = current.apply_gate(gate["matrix"])
+        states.append({"idx": i + 1, "gate": gate["label"],
+                        "ket": current.to_ket_text(), "vec": current.bloch_vector()})
+    return states
 
 
 @st.dialog("GATE CONFIGURATION")
-def _configure_gate(index: int):
-    """Dialog for configuring a single gate in the chain."""
-    gate = st.session_state.chain_gates[index]
-    gate_type = gate["type"]
-    gate_theta = gate["theta"]
+def _gate_config_dialog(gate_idx: int):
+    """Popup dialog for configuring a single gate in the chain."""
+    cfg = st.session_state.chain_gates[gate_idx]
+    st.markdown(f"**GATE {gate_idx + 1}**")
 
     new_type = st.radio(
-        "Gate Type",
-        CHAIN_GATES,
-        index=CHAIN_GATES.index(gate_type),
-        horizontal=True,
+        "Type", CHAIN_GATES, index=CHAIN_GATES.index(cfg["type"]),
+        horizontal=True, key=f"dlg_gate_type_{gate_idx}",
     )
-
-    new_theta = 0.0
+    new_theta = cfg["theta"]
     if new_type in ("Rx", "Ry", "Rz"):
         angle_deg = st.slider(
-            "Rotation Angle (°)",
-            min_value=0.0,
-            max_value=360.0,
-            value=float(np.degrees(gate_theta)),
-            step=1.0,
+            "Angle (°)", 0.0, 360.0,
+            value=float(np.degrees(cfg["theta"])), step=1.0,
+            key=f"dlg_gate_angle_{gate_idx}",
         )
         new_theta = np.radians(angle_deg)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("CONFIRM", use_container_width=True):
-            st.session_state.chain_gates[index]["type"] = new_type
-            st.session_state.chain_gates[index]["theta"] = new_theta
-            st.rerun()
-    with col2:
-        if st.button("CANCEL", use_container_width=True):
-            st.rerun()
-
-
-@st.dialog("QUANTUM STATE")
-def _show_state_detail():
-    """Dialog for showing intermediate quantum state details."""
-    idx = st.session_state.get("_show_state_idx", 0)
-    states = st.session_state.get("chain_intermediate_states", [])
-    if idx < len(states):
-        istate = states[idx]
-        ket = istate.to_ket_text()
-        bx, by, bz = istate.bloch_vector()
-        p0, p1 = istate.probabilities()
-        st.markdown(f"**State {idx}**")
-        st.markdown(f'<span class="ket">{ket}</span>', unsafe_allow_html=True)
-        st.markdown(f"**Bloch Vector:** ({bx:.4f}, {by:.4f}, {bz:.4f})")
-        st.markdown(f"**P(|0⟩):** {p0*100:.1f}%  **P(|1⟩):** {p1*100:.1f}%")
-    if st.button("CLOSE", use_container_width=True):
+    if st.button("CONFIRM", use_container_width=True, key=f"dlg_confirm_{gate_idx}"):
+        st.session_state.chain_gates[gate_idx]["type"] = new_type
+        st.session_state.chain_gates[gate_idx]["theta"] = new_theta
         st.rerun()
 
 
-def render_chain_controls(initial_label: str = "|0⟩") -> dict:
-    """Render horizontal gate chain with integrated intermediate states.
-
-    Args:
-        initial_label: Label for the initial state node at chain start.
+def render_chain_controls() -> dict:
+    """Render multi-gate chain controls below the main layout.
 
     Returns dict with keys: chain_gates, apply_clicked, reset_clicked
     """
@@ -179,99 +168,105 @@ def render_chain_controls(initial_label: str = "|0⟩") -> dict:
             {"type": "X", "theta": 0.0, "id": "gate_0"},
         ]
 
-    gates = st.session_state.chain_gates
-    n = len(gates)
+    st.markdown("### GATE CHAIN")
 
-    st.markdown("### MULTI-GATE CHAIN")
+    # ── Horizontal chain flow ─────────────────────────
+    chain_html = _build_chain_html(st.session_state.chain_gates)
+    st.markdown(chain_html, unsafe_allow_html=True)
 
-    # ── Top row: initial label → gate nodes → final label ──
-    # Layout: [INIT] [G0] [→] [G1] [→] ... [GN] [+ADD] [FINAL]
-    # Count: 1 + n + (n-1) + 1 + 1 = 2n + 2 columns
-    top_cols = 1 + n + max(n - 1, 0) + 1 + 1
-    cols = st.columns(top_cols)
+    # ── Gate selector (pill buttons) ──────────────────
+    gate_labels = []
+    for i, g in enumerate(st.session_state.chain_gates):
+        lbl = g["type"]
+        if g["type"] in ("Rx", "Ry", "Rz"):
+            lbl += f'({g["theta"]:.2f})'
+        gate_labels.append(f"{i+1}. {lbl}")
 
-    # Initial state label
-    with cols[0]:
-        st.button(initial_label, key="chain_init_label", use_container_width=True, disabled=True)
+    selected = st.radio(
+        "Select gate to configure", gate_labels,
+        horizontal=True, label_visibility="collapsed",
+        key="chain_gate_selector",
+    )
+    sel_idx = gate_labels.index(selected)
 
-    # Gate nodes and arrows
-    btn_idx = 1
-    for i in range(n):
-        with cols[btn_idx]:
-            name = _gate_display_name(gates[i])
-            if st.button(name, key=f"chain_node_{i}", use_container_width=True):
-                _configure_gate(i)
-        btn_idx += 1
-        if i < n - 1:
-            with cols[btn_idx]:
-                st.markdown('<div style="text-align:center;color:#ff8c00;font-size:1.1rem;'
-                            'padding:4px 0;">&rarr;</div>', unsafe_allow_html=True)
-            btn_idx += 1
+    # ── Selected gate config (opens dialog) ───────────
+    cfg = st.session_state.chain_gates[sel_idx]
+    cfg_label = cfg["type"]
+    if cfg["type"] in ("Rx", "Ry", "Rz"):
+        cfg_label += f'({cfg["theta"]:.2f} rad)'
 
-    # Add gate button
-    with cols[btn_idx]:
-        if st.button("+", key="chain_add_gate", use_container_width=True):
-            new_id = f"gate_{n}"
+    col_cfg, col_del = st.columns([3, 1])
+    with col_cfg:
+        st.markdown(
+            f'<div class="gate-sel-info">GATE {sel_idx+1}: '
+            f'<span class="gate-sel-label">{cfg_label}</span></div>',
+            unsafe_allow_html=True,
+        )
+    with col_del:
+        if len(st.session_state.chain_gates) > 1:
+            if st.button("REMOVE", key="chain_remove_sel",
+                         use_container_width=True):
+                st.session_state.chain_gates.pop(sel_idx)
+                st.rerun()
+
+    if st.button("CONFIGURE GATE", use_container_width=True,
+                 key="chain_open_config"):
+        _gate_config_dialog(sel_idx)
+
+    # ── Action buttons ────────────────────────────────
+    col_add, col_apply, col_reset = st.columns(3)
+    with col_add:
+        if st.button("+ ADD GATE", use_container_width=True,
+                      key="chain_add_gate"):
+            new_id = f"gate_{len(st.session_state.chain_gates)}"
             st.session_state.chain_gates.append(
                 {"type": "X", "theta": 0.0, "id": new_id}
             )
             st.rerun()
-    btn_idx += 1
-
-    # Final state label
-    with cols[btn_idx]:
-        final_label = "FINAL"
-        if st.session_state.chain_final_state:
-            final_label = st.session_state.chain_final_state.to_ket_text()
-            if len(final_label) > 8:
-                final_label = "FINAL"
-        st.button(final_label, key="chain_final_label", use_container_width=True, disabled=True)
-
-    # ── Bottom row: intermediate state numbers ──
-    # Only show if chain has been applied
-    states = st.session_state.get("chain_intermediate_states", [])
-    if states:
-        # Aligned with top row: [state0] [→gap] [state1] [→gap] ... [stateN+1]
-        num_states = len(states)
-        # We need to place state buttons at the arrow positions + start/end
-        # Layout mirrors top row: [s0] [s1] [gap] [s2] [gap] ... [sN]
-        state_cols = st.columns(top_cols)
-        # State 0 at position 0 (under INIT)
-        with state_cols[0]:
-            if st.button("0", key="inter_state_0", use_container_width=True):
-                st.session_state["_show_state_idx"] = 0
-                _show_state_detail()
-        # States 1..n-1 at arrow positions (between gate nodes)
-        state_idx = 1
-        col_pos = 1  # after INIT
-        for i in range(n):
-            col_pos += 1  # skip gate node column
-            if i < n - 1:
-                # This is an arrow column — place state button here
-                with state_cols[col_pos - 1]:
-                    if st.button(str(state_idx), key=f"inter_state_{state_idx}",
-                                 use_container_width=True):
-                        st.session_state["_show_state_idx"] = state_idx
-                        _show_state_detail()
-                state_idx += 1
-        # Final state at the last position
-        with state_cols[btn_idx]:
-            if st.button(str(num_states - 1), key=f"inter_state_{num_states - 1}",
-                         use_container_width=True):
-                st.session_state["_show_state_idx"] = num_states - 1
-                _show_state_detail()
-
-    # ── Action buttons ──
-    st.markdown("")
-    col_apply, col_reset = st.columns(2)
     with col_apply:
-        apply_clicked = st.button("APPLY CHAIN", use_container_width=True)
+        apply_clicked = st.button("APPLY CHAIN", use_container_width=True,
+                                  key="chain_apply")
     with col_reset:
-        reset_clicked = st.button("RESET CHAIN", use_container_width=True)
+        reset_clicked = st.button("RESET CHAIN", use_container_width=True,
+                                  key="chain_reset")
         if reset_clicked:
             st.session_state.chain_gates = [
                 {"type": "X", "theta": 0.0, "id": "gate_0"},
             ]
+
+    # ── Intermediate states ───────────────────────────
+    from quantum import BlochState
+    init_label = st.session_state.get("initial_state_label", "|0⟩")
+    if init_label == "Custom":
+        t = st.session_state.get("last_custom_key")
+        if t:
+            init_state = BlochState(theta=t[0], phi=t[1])
+        else:
+            init_state = BlochState(label="|0⟩")
+    else:
+        init_state = BlochState(label=init_label)
+
+    intermediates = _compute_intermediate_states(
+        init_state, st.session_state.chain_gates
+    )
+
+    st.markdown("##### INTERMEDIATE STATES")
+    for s in intermediates:
+        x, y, z = s["vec"]
+        with st.expander(
+            f'{s["idx"]}. [{s["gate"]}]  {s["ket"]}', expanded=False
+        ):
+            st.markdown(
+                f'<div class="data-bar">'
+                f'<div class="data-item"><div class="data-label">Bloch Vector</div>'
+                f'<div class="data-value">({x:.4f}, {y:.4f}, {z:.4f})</div></div>'
+                f'<div class="data-item"><div class="data-label">P(|0⟩)</div>'
+                f'<div class="data-value">{((1+z)/2)*100:.1f}%</div></div>'
+                f'<div class="data-item"><div class="data-label">P(|1⟩)</div>'
+                f'<div class="data-value">{((1-z)/2)*100:.1f}%</div></div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
     return {
         "chain_gates": list(st.session_state.chain_gates),
