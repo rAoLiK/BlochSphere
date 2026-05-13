@@ -120,8 +120,14 @@ if controls["apply_clicked"]:
 
 # ── Handle reset ────────────────────────────────────────────────────
 if controls["reset_clicked"]:
-    initial_label = controls["initial_state"]
-    st.session_state.bloch_state = BlochState(label=initial_label)
+    if controls["initial_state"] == "Custom":
+        st.session_state.bloch_state = BlochState(
+            theta=controls["custom_theta"],
+            phi=controls["custom_phi"],
+        )
+    else:
+        initial_label = controls["initial_state"]
+        st.session_state.bloch_state = BlochState(label=initial_label)
     st.session_state.history = [st.session_state.bloch_state]
     st.session_state.last_gate_label = "-"
     st.session_state.last_gate_angle = 0.0
