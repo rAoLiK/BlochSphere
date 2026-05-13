@@ -179,11 +179,10 @@ with col_right:
     }
 
     scene_html = build_scene_html(scene_data)
-    scene_key = f"scene_{st.session_state.anim_trigger}_{st.session_state.chain_trigger}"
+    scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_{st.session_state.chain_trigger} -->\n"
     st.components.v1.html(
         scene_html,
         height=620,
-        key=scene_key,
     )
 
 with col_left:
