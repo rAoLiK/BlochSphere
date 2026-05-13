@@ -105,6 +105,13 @@ def render_controls() -> dict:
 CHAIN_GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 
 
+def _on_gate_type_change(i: int):
+    """Callback: update chain gate type without full rerun."""
+    key = f"chain_gate_type_{i}"
+    if key in st.session_state:
+        st.session_state.chain_gates[i]["type"] = st.session_state[key]
+
+
 def render_chain_controls() -> dict:
     """Render multi-gate chain controls below the main layout.
 
@@ -126,15 +133,17 @@ def render_chain_controls() -> dict:
             title = f"GATE {i + 1} — {gate_type}"
 
         with st.expander(title, expanded=False):
-            new_type = st.radio(
+            st.radio(
                 "Gate type",
                 CHAIN_GATES,
                 index=CHAIN_GATES.index(gate_type),
                 horizontal=True,
                 key=f"chain_gate_type_{i}",
                 label_visibility="collapsed",
+                on_change=_on_gate_type_change,
+                args=(i,),
             )
-            st.session_state.chain_gates[i]["type"] = new_type
+            new_type = st.session_state.chain_gates[i]["type"]
 
             if new_type in ("Rx", "Ry", "Rz"):
                 angle_deg = st.slider(
@@ -147,7 +156,7 @@ def render_chain_controls() -> dict:
                 )
                 new_theta = np.radians(angle_deg)
                 st.session_state.chain_gates[i]["theta"] = new_theta
-                if new_type != gate_type or abs(new_theta - gate_theta) > 1e-6:
+                if abs(new_theta - gate_theta) > 1e-6:
                     st.rerun()
             else:
                 st.session_state.chain_gates[i]["theta"] = 0.0
