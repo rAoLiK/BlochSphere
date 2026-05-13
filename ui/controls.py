@@ -5,13 +5,14 @@ import numpy as np
 
 
 INITIAL_STATES = ["|0⟩", "|1⟩", "|+⟩", "Custom"]
-GATE_OPTIONS = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
+GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 
 
 def render_controls() -> dict:
     """Render sidebar controls and return selections as a dict.
 
-    Returns keys: initial_state, custom_theta, custom_phi, speed
+    Returns keys: initial_state, custom_theta, custom_phi, gate, theta,
+                  apply_clicked, reset_clicked, playing, speed
     """
     result = {}
 
@@ -56,6 +57,37 @@ def render_controls() -> dict:
         result["custom_theta"] = None
         result["custom_phi"] = None
 
+    st.sidebar.markdown("### GATE SELECT")
+    result["gate"] = st.sidebar.radio(
+        "Select quantum gate",
+        GATES,
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+
+    # Rotation angle slider (only for Rx, Ry, Rz)
+    if result["gate"] in ("Rx", "Ry", "Rz"):
+        st.sidebar.markdown("### ROTATION ANGLE")
+        theta_deg = st.sidebar.slider(
+            "Rotation angle in degrees",
+            min_value=0.0,
+            max_value=360.0,
+            value=90.0,
+            step=1.0,
+            label_visibility="collapsed",
+        )
+        result["theta"] = np.radians(theta_deg)
+        st.sidebar.caption(f"θ = {theta_deg:.0f}° = {result['theta']:.3f} rad")
+    else:
+        result["theta"] = 0.0  # Not used for fixed gates
+
+    st.sidebar.markdown("### ACTION")
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        result["apply_clicked"] = st.button("APPLY", use_container_width=True)
+    with col2:
+        result["reset_clicked"] = st.button("RESET", use_container_width=True)
+
     st.sidebar.markdown("### ANIMATION")
     result["speed"] = st.sidebar.slider(
         "Speed",
@@ -70,8 +102,11 @@ def render_controls() -> dict:
     return result
 
 
-def render_gate_chain() -> dict:
-    """Render gate chain controls below the main layout.
+CHAIN_GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
+
+
+def render_chain_controls() -> dict:
+    """Render multi-gate chain controls below the main layout.
 
     Returns dict with keys: chain_gates, apply_clicked, reset_clicked
     """
@@ -80,7 +115,7 @@ def render_gate_chain() -> dict:
             {"type": "X", "theta": 0.0, "id": "gate_0"},
         ]
 
-    st.markdown("### GATE CHAIN")
+    st.markdown("### MULTI-GATE CHAIN")
 
     for i, gate_cfg in enumerate(st.session_state.chain_gates):
         gate_type = gate_cfg["type"]
@@ -93,13 +128,15 @@ def render_gate_chain() -> dict:
         with st.expander(title, expanded=False):
             new_type = st.radio(
                 "Gate type",
-                GATE_OPTIONS,
-                index=GATE_OPTIONS.index(gate_type),
+                CHAIN_GATES,
+                index=CHAIN_GATES.index(gate_type),
                 horizontal=True,
                 key=f"chain_gate_type_{i}",
                 label_visibility="collapsed",
             )
             st.session_state.chain_gates[i]["type"] = new_type
+            if new_type != gate_type:
+                st.rerun()
 
             if new_type in ("Rx", "Ry", "Rz"):
                 angle_deg = st.slider(
@@ -129,9 +166,9 @@ def render_gate_chain() -> dict:
             )
             st.rerun()
     with col_apply:
-        apply_clicked = st.button("APPLY", use_container_width=True)
+        apply_clicked = st.button("APPLY CHAIN", use_container_width=True)
     with col_reset:
-        reset_clicked = st.button("RESET", use_container_width=True)
+        reset_clicked = st.button("RESET CHAIN", use_container_width=True)
         if reset_clicked:
             st.session_state.chain_gates = [
                 {"type": "X", "theta": 0.0, "id": "gate_0"},
