@@ -56,8 +56,6 @@ if "chain_final_state" not in st.session_state:
     st.session_state.chain_final_state = None
 if "chain_trigger" not in st.session_state:
     st.session_state.chain_trigger = 0
-if "chain_intermediate_states" not in st.session_state:
-    st.session_state.chain_intermediate_states = []
 
 
 # ── Header ──────────────────────────────────────────────────────────
@@ -96,7 +94,6 @@ with st.sidebar.expander("REFERENCE"):
 
 # ── Handle initial state change ─────────────────────────────────
 if controls["initial_state"] == "Custom":
-    # Only update when theta/phi actually changed
     custom_key = (controls["custom_theta"], controls["custom_phi"])
     if st.session_state.get("last_custom_key") != custom_key:
         st.session_state.bloch_state = BlochState(
@@ -151,7 +148,6 @@ if controls["apply_clicked"]:
     st.session_state.chain_labels = []
     st.session_state.chain_details = []
     st.session_state.chain_final_state = None
-    st.session_state.chain_intermediate_states = []
     st.session_state.anim_trigger += 1
 
 # ── Handle reset ────────────────────────────────────────────────────
@@ -176,115 +172,147 @@ if controls["reset_clicked"]:
     st.session_state.chain_labels = []
     st.session_state.chain_details = []
     st.session_state.chain_final_state = None
-    st.session_state.chain_intermediate_states = []
     st.session_state.chain_trigger += 1
     st.session_state.anim_trigger += 1
 
-# ── Main layout ─────────────────────────────────────────────────────
-col_left, col_right = st.columns([0.38, 0.62])
+# ── Tab layout ──────────────────────────────────────────────────────
+tab_single, tab_chain = st.tabs(["SINGLE GATE", "GATE CHAIN"])
 
-with col_right:
-    state = st.session_state.bloch_state
-    x, y, z = state.bloch_vector()
+# ── Single Gate Tab ─────────────────────────────────────────────────
+with tab_single:
+    col_left, col_right = st.columns([0.38, 0.62])
 
-    scene_data = {
-        "bloch_vector": [x, y, z],
-        "frames": st.session_state.frames,
-        "axis": list(st.session_state.last_axis) if st.session_state.last_axis else [0, 0, 0],
-        "angle": st.session_state.last_gate_angle,
-        "gate_label": st.session_state.last_gate_label,
-        "prob0": state.probabilities()[0],
-        "prob1": state.probabilities()[1],
-        "state_text": state.to_ket_text(),
-        "speed": controls["speed"],
-        "chain_frames": st.session_state.chain_frames,
-        "chain_boundaries": st.session_state.chain_boundaries,
-        "chain_labels": st.session_state.chain_labels,
-        "chain_details": st.session_state.chain_details,
-    }
+    with col_right:
+        state = st.session_state.bloch_state
+        x, y, z = state.bloch_vector()
 
-    scene_html = build_scene_html(scene_data)
-    scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_{st.session_state.chain_trigger} -->\n"
-    st.components.v1.html(
-        scene_html,
-        height=620,
-    )
+        scene_data = {
+            "bloch_vector": [x, y, z],
+            "frames": st.session_state.frames,
+            "axis": list(st.session_state.last_axis) if st.session_state.last_axis else [0, 0, 0],
+            "angle": st.session_state.last_gate_angle,
+            "gate_label": st.session_state.last_gate_label,
+            "prob0": state.probabilities()[0],
+            "prob1": state.probabilities()[1],
+            "state_text": state.to_ket_text(),
+            "speed": controls["speed"],
+            "chain_frames": [],
+            "chain_boundaries": [],
+            "chain_labels": [],
+            "chain_details": [],
+        }
 
-with col_left:
-    state = st.session_state.bloch_state
-    render_state_display(
-        state_text=state.to_ket_text(),
-        prob0=state.probabilities()[0],
-        prob1=state.probabilities()[1],
-        gate_label=st.session_state.last_gate_label,
-        gate_angle=st.session_state.last_gate_angle,
-        bloch_vector=state.bloch_vector(),
-        rotation_axis=st.session_state.last_axis,
-    )
+        scene_html = build_scene_html(scene_data)
+        scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_0 -->\n"
+        st.components.v1.html(scene_html, height=560)
 
-    # Gate matrix for the last applied gate
-    if st.session_state.last_matrix_tex:
-        render_gate_matrix(
-            st.session_state.last_gate_label,
-            st.session_state.last_matrix_tex,
+    with col_left:
+        state = st.session_state.bloch_state
+        render_state_display(
+            state_text=state.to_ket_text(),
+            prob0=state.probabilities()[0],
+            prob1=state.probabilities()[1],
+            gate_label=st.session_state.last_gate_label,
+            gate_angle=st.session_state.last_gate_angle,
+            bloch_vector=state.bloch_vector(),
+            rotation_axis=st.session_state.last_axis,
         )
 
-    # Gate history
-    if len(st.session_state.history) > 1:
-        st.markdown("### GATE HISTORY")
-        rows = []
-        for i, hist_state in enumerate(st.session_state.history):
-            ket = hist_state.to_ket_text()
-            if i == 0:
-                rows.append(f'<div class="hist-row"><span class="hist-idx">0</span>'
-                            f'<span class="hist-gate">INIT</span>'
-                            f'<span class="hist-ket">{ket}</span></div>')
-            else:
-                gate_name = st.session_state.history_labels[i]
-                rows.append(f'<div class="hist-row"><span class="hist-idx">{i}</span>'
-                            f'<span class="hist-gate">{gate_name}</span>'
-                            f'<span class="hist-ket">{ket}</span></div>')
-        history_html = "\n".join(rows)
-        st.markdown(
-            f'<div class="hist-container">{history_html}</div>',
-            unsafe_allow_html=True,
+        if st.session_state.last_matrix_tex:
+            render_gate_matrix(
+                st.session_state.last_gate_label,
+                st.session_state.last_matrix_tex,
+            )
+
+        if len(st.session_state.history) > 1:
+            st.markdown("### GATE HISTORY")
+            rows = []
+            for i, hist_state in enumerate(st.session_state.history):
+                ket = hist_state.to_ket_text()
+                if i == 0:
+                    rows.append(f'<div class="hist-row"><span class="hist-idx">0</span>'
+                                f'<span class="hist-gate">INIT</span>'
+                                f'<span class="hist-ket">{ket}</span></div>')
+                else:
+                    gate_name = st.session_state.history_labels[i]
+                    rows.append(f'<div class="hist-row"><span class="hist-idx">{i}</span>'
+                                f'<span class="hist-gate">{gate_name}</span>'
+                                f'<span class="hist-ket">{ket}</span></div>')
+            st.markdown(
+                f'<div class="hist-container">{"".join(rows)}</div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            gate_preview = get_gate(controls["gate"], controls["theta"])
+            render_gate_matrix(
+                gate_preview["label"],
+                gate_preview["matrix_tex"],
+            )
+
+# ── Gate Chain Tab ──────────────────────────────────────────────────
+with tab_chain:
+    chain_controls = render_chain_controls()
+
+    if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
+        result = generate_chain_frames(
+            st.session_state.bloch_state,
+            chain_controls["chain_gates"],
         )
+        st.session_state.chain_frames = result["frames"]
+        st.session_state.chain_boundaries = result["boundaries"]
+        st.session_state.chain_labels = result["labels"]
+        st.session_state.chain_details = result["gate_details"]
+        st.session_state.chain_final_state = result["final_state"]
+        st.session_state.chain_trigger += 1
+        st.rerun()
 
-    else:
-        # Show the matrix for the currently selected gate (preview)
-        gate_preview = get_gate(controls["gate"], controls["theta"])
-        render_gate_matrix(
-            gate_preview["label"],
-            gate_preview["matrix_tex"],
-        )
+    if chain_controls["reset_clicked"]:
+        st.session_state.chain_frames = []
+        st.session_state.chain_boundaries = []
+        st.session_state.chain_labels = []
+        st.session_state.chain_details = []
+        st.session_state.chain_final_state = None
+        st.session_state.chain_trigger += 1
+        st.rerun()
 
-# ── Multi-gate chain ──────────────────────────────────────
-st.markdown("---")
-chain_controls = render_chain_controls(
-    initial_label=st.session_state.initial_state_label
-)
+    # Chain 3D scene
+    if st.session_state.chain_frames:
+        state = st.session_state.bloch_state
+        x, y, z = state.bloch_vector()
+        scene_data = {
+            "bloch_vector": [x, y, z],
+            "frames": [],
+            "axis": [0, 0, 0],
+            "angle": 0,
+            "gate_label": "-",
+            "prob0": state.probabilities()[0],
+            "prob1": state.probabilities()[1],
+            "state_text": state.to_ket_text(),
+            "speed": controls["speed"],
+            "chain_frames": st.session_state.chain_frames,
+            "chain_boundaries": st.session_state.chain_boundaries,
+            "chain_labels": st.session_state.chain_labels,
+            "chain_details": st.session_state.chain_details,
+        }
+        scene_html = build_scene_html(scene_data)
+        scene_html += f"\n<!-- tc:{st.session_state.chain_trigger} -->\n"
+        st.components.v1.html(scene_html, height=500)
 
-if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
-    result = generate_chain_frames(
-        st.session_state.bloch_state,
-        chain_controls["chain_gates"],
-    )
-    st.session_state.chain_frames = result["frames"]
-    st.session_state.chain_boundaries = result["boundaries"]
-    st.session_state.chain_labels = result["labels"]
-    st.session_state.chain_details = result["gate_details"]
-    st.session_state.chain_final_state = result["final_state"]
-    st.session_state.chain_intermediate_states = result["intermediate_states"]
-    st.session_state.chain_trigger += 1
-    st.rerun()
-
-if chain_controls["reset_clicked"]:
-    st.session_state.chain_frames = []
-    st.session_state.chain_boundaries = []
-    st.session_state.chain_labels = []
-    st.session_state.chain_details = []
-    st.session_state.chain_final_state = None
-    st.session_state.chain_intermediate_states = []
-    st.session_state.chain_trigger += 1
-    st.rerun()
-
+        # Chain final state
+        if st.session_state.chain_final_state:
+            final = st.session_state.chain_final_state
+            fx, fy, fz = final.bloch_vector()
+            fp0, fp1 = final.probabilities()
+            st.markdown(
+                f'<div class="data-bar">'
+                f'<div class="data-item"><div class="data-label">Final State</div>'
+                f'<div class="data-value"><span class="ket">{final.to_ket_text()}</span></div></div>'
+                f'<div class="data-item"><div class="data-label">Bloch</div>'
+                f'<div class="data-value">({fx:.3f}, {fy:.3f}, {fz:.3f})</div></div>'
+                f'<div class="data-item"><div class="data-label">P(|0⟩)</div>'
+                f'<div class="data-value">{fp0*100:.1f}%</div></div>'
+                f'<div class="data-item"><div class="data-label">P(|1⟩)</div>'
+                f'<div class="data-value">{fp1*100:.1f}%</div></div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )

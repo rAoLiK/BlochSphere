@@ -234,7 +234,7 @@ def render_chain_controls() -> dict:
                 {"type": "X", "theta": 0.0, "id": "gate_0"},
             ]
 
-    # ── Intermediate states ───────────────────────────
+    # ── Intermediate states (compact scrollable) ──────
     from quantum import BlochState
     init_label = st.session_state.get("initial_state_label", "|0⟩")
     if init_label == "Custom":
@@ -250,23 +250,26 @@ def render_chain_controls() -> dict:
         init_state, st.session_state.chain_gates
     )
 
-    st.markdown("##### INTERMEDIATE STATES")
+    rows = []
     for s in intermediates:
         x, y, z = s["vec"]
-        with st.expander(
-            f'{s["idx"]}. [{s["gate"]}]  {s["ket"]}', expanded=False
-        ):
-            st.markdown(
-                f'<div class="data-bar">'
-                f'<div class="data-item"><div class="data-label">Bloch Vector</div>'
-                f'<div class="data-value">({x:.4f}, {y:.4f}, {z:.4f})</div></div>'
-                f'<div class="data-item"><div class="data-label">P(|0⟩)</div>'
-                f'<div class="data-value">{((1+z)/2)*100:.1f}%</div></div>'
-                f'<div class="data-item"><div class="data-label">P(|1⟩)</div>'
-                f'<div class="data-value">{((1-z)/2)*100:.1f}%</div></div>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
+        p0 = (1 + z) / 2 * 100
+        gate_badge = (f'<span class="istate-gate">{s["gate"]}</span>'
+                      if s["gate"] != "-" else '<span class="istate-init">INIT</span>')
+        rows.append(
+            f'<div class="istate-row">'
+            f'<span class="istate-idx">{s["idx"]}</span>'
+            f'{gate_badge}'
+            f'<span class="istate-ket">{s["ket"]}</span>'
+            f'<span class="istate-vec">({x:.2f},{y:.2f},{z:.2f})</span>'
+            f'<span class="istate-prob">|0⟩{p0:.0f}%</span>'
+            f'</div>'
+        )
+    st.markdown("##### STATE EVOLUTION")
+    st.markdown(
+        f'<div class="istate-container">{"".join(rows)}</div>',
+        unsafe_allow_html=True,
+    )
 
     return {
         "chain_gates": list(st.session_state.chain_gates),

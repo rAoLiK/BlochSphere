@@ -407,6 +407,74 @@ code { color: #ffaa00 !important; }
     color: #ff8c00;
     font-weight: 700;
 }
+
+/* ── State evolution (compact) ──────────────────────── */
+.istate-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #ff6b00;
+    background: #0d0d0d;
+    margin-top: 0.3rem;
+}
+.istate-container::-webkit-scrollbar { width: 4px; }
+.istate-container::-webkit-scrollbar-track { background: #0d0d0d; }
+.istate-container::-webkit-scrollbar-thumb { background: #332211; }
+.istate-container::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+
+.istate-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-bottom: 1px solid #1a1a1a;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.68rem;
+    line-height: 1.5;
+}
+.istate-row:last-child { border-bottom: none; }
+.istate-row:nth-child(even) { background: #0f0f0f; }
+
+.istate-idx {
+    color: #555;
+    min-width: 14px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.istate-init {
+    color: #777;
+    min-width: 36px;
+    font-size: 0.62rem;
+    letter-spacing: 0.5px;
+}
+.istate-gate {
+    color: #0a0a0a;
+    background: #ff6b00;
+    padding: 0 4px;
+    min-width: 36px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.62rem;
+}
+.istate-ket {
+    color: #ffaa00;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.istate-vec {
+    color: #666;
+    font-size: 0.62rem;
+    white-space: nowrap;
+}
+.istate-prob {
+    color: #ff8c00;
+    font-size: 0.62rem;
+    min-width: 52px;
+    text-align: right;
+    white-space: nowrap;
+}
 """
 
 
