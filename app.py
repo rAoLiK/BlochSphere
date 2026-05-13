@@ -56,6 +56,8 @@ if "chain_final_state" not in st.session_state:
     st.session_state.chain_final_state = None
 if "chain_trigger" not in st.session_state:
     st.session_state.chain_trigger = 0
+if "chain_intermediate_states" not in st.session_state:
+    st.session_state.chain_intermediate_states = []
 
 
 # ── Header ──────────────────────────────────────────────────────────
@@ -149,6 +151,7 @@ if controls["apply_clicked"]:
     st.session_state.chain_labels = []
     st.session_state.chain_details = []
     st.session_state.chain_final_state = None
+    st.session_state.chain_intermediate_states = []
     st.session_state.anim_trigger += 1
 
 # ── Handle reset ────────────────────────────────────────────────────
@@ -173,6 +176,7 @@ if controls["reset_clicked"]:
     st.session_state.chain_labels = []
     st.session_state.chain_details = []
     st.session_state.chain_final_state = None
+    st.session_state.chain_intermediate_states = []
     st.session_state.chain_trigger += 1
     st.session_state.anim_trigger += 1
 
@@ -268,6 +272,7 @@ if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(cha
     st.session_state.chain_labels = result["labels"]
     st.session_state.chain_details = result["gate_details"]
     st.session_state.chain_final_state = result["final_state"]
+    st.session_state.chain_intermediate_states = result["intermediate_states"]
     st.session_state.chain_trigger += 1
     st.rerun()
 
@@ -277,6 +282,7 @@ if chain_controls["reset_clicked"]:
     st.session_state.chain_labels = []
     st.session_state.chain_details = []
     st.session_state.chain_final_state = None
+    st.session_state.chain_intermediate_states = []
     st.session_state.chain_trigger += 1
     st.rerun()
 
@@ -308,3 +314,24 @@ if st.session_state.chain_final_state:
         """,
         unsafe_allow_html=True,
     )
+
+# Intermediate states
+if st.session_state.chain_intermediate_states:
+    st.markdown('<div class="inter-states-label">INTERMEDIATE STATES</div>',
+                unsafe_allow_html=True)
+    states = st.session_state.chain_intermediate_states
+    cols = st.columns(len(states))
+    for idx, istate in enumerate(states):
+        with cols[idx]:
+            if st.button(str(idx), key=f"inter_state_{idx}", use_container_width=True):
+                pass  # expander below handles display
+            with st.expander(f"State {idx}", expanded=False):
+                ket = istate.to_ket_text()
+                bx, by, bz = istate.bloch_vector()
+                p0, p1 = istate.probabilities()
+                st.markdown(
+                    f'<span class="ket">{ket}</span>',
+                    unsafe_allow_html=True,
+                )
+                st.caption(f"Bloch: ({bx:.4f}, {by:.4f}, {bz:.4f})")
+                st.caption(f"P(|0⟩) = {p0*100:.1f}%  P(|1⟩) = {p1*100:.1f}%")
