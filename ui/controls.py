@@ -106,7 +106,7 @@ CHAIN_GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 
 
 def _gate_display_name(gate_cfg: dict) -> str:
-    """Return display name for a gate config dict."""
+    """Return compact display name for a gate config."""
     if gate_cfg["type"] in ("Rx", "Ry", "Rz"):
         return f"{gate_cfg['type']}({np.degrees(gate_cfg['theta']):.0f}°)"
     return gate_cfg["type"]
@@ -148,8 +148,29 @@ def _configure_gate(index: int):
             st.rerun()
 
 
-def render_chain_controls() -> dict:
-    """Render the horizontal gate chain with dialog-based configuration.
+@st.dialog("QUANTUM STATE")
+def _show_state_detail():
+    """Dialog for showing intermediate quantum state details."""
+    idx = st.session_state.get("_show_state_idx", 0)
+    states = st.session_state.get("chain_intermediate_states", [])
+    if idx < len(states):
+        istate = states[idx]
+        ket = istate.to_ket_text()
+        bx, by, bz = istate.bloch_vector()
+        p0, p1 = istate.probabilities()
+        st.markdown(f"**State {idx}**")
+        st.markdown(f'<span class="ket">{ket}</span>', unsafe_allow_html=True)
+        st.markdown(f"**Bloch Vector:** ({bx:.4f}, {by:.4f}, {bz:.4f})")
+        st.markdown(f"**P(|0⟩):** {p0*100:.1f}%  **P(|1⟩):** {p1*100:.1f}%")
+    if st.button("CLOSE", use_container_width=True):
+        st.rerun()
+
+
+def render_chain_controls(initial_label: str = "|0⟩") -> dict:
+    """Render horizontal gate chain with integrated intermediate states.
+
+    Args:
+        initial_label: Label for the initial state node at chain start.
 
     Returns dict with keys: chain_gates, apply_clicked, reset_clicked
     """
@@ -158,40 +179,89 @@ def render_chain_controls() -> dict:
             {"type": "X", "theta": 0.0, "id": "gate_0"},
         ]
 
+    gates = st.session_state.chain_gates
+    n = len(gates)
+
     st.markdown("### MULTI-GATE CHAIN")
 
-    # Build horizontal chain HTML
-    nodes_html = []
-    for i, gate_cfg in enumerate(st.session_state.chain_gates):
-        name = _gate_display_name(gate_cfg)
-        nodes_html.append(
-            f'<span class="chain-node" data-idx="{i}">{name}</span>'
-        )
-        nodes_html.append('<span class="chain-arrow">&rarr;</span>')
-    nodes_html.append('<span class="chain-add-node" data-action="add">+</span>')
+    # ── Top row: initial label → gate nodes → final label ──
+    # Layout: [INIT] [G0] [→] [G1] [→] ... [GN] [+ADD] [FINAL]
+    # Count: 1 + n + (n-1) + 1 + 1 = 2n + 2 columns
+    top_cols = 1 + n + max(n - 1, 0) + 1 + 1
+    cols = st.columns(top_cols)
 
-    chain_html = f'<div class="chain-container">{"".join(nodes_html)}</div>'
-    st.markdown(chain_html, unsafe_allow_html=True)
+    # Initial state label
+    with cols[0]:
+        st.button(initial_label, key="chain_init_label", use_container_width=True, disabled=True)
 
-    # Hidden buttons below the chain for click detection
-    num_items = len(st.session_state.chain_gates) + 1  # gates + add button
-    cols = st.columns(num_items)
-    for i in range(len(st.session_state.chain_gates)):
-        with cols[i]:
-            name = _gate_display_name(st.session_state.chain_gates[i])
+    # Gate nodes and arrows
+    btn_idx = 1
+    for i in range(n):
+        with cols[btn_idx]:
+            name = _gate_display_name(gates[i])
             if st.button(name, key=f"chain_node_{i}", use_container_width=True):
                 _configure_gate(i)
+        btn_idx += 1
+        if i < n - 1:
+            with cols[btn_idx]:
+                st.markdown('<div style="text-align:center;color:#ff8c00;font-size:1.1rem;'
+                            'padding:4px 0;">&rarr;</div>', unsafe_allow_html=True)
+            btn_idx += 1
 
     # Add gate button
-    with cols[len(st.session_state.chain_gates)]:
+    with cols[btn_idx]:
         if st.button("+", key="chain_add_gate", use_container_width=True):
-            new_id = f"gate_{len(st.session_state.chain_gates)}"
+            new_id = f"gate_{n}"
             st.session_state.chain_gates.append(
                 {"type": "X", "theta": 0.0, "id": new_id}
             )
             st.rerun()
+    btn_idx += 1
 
-    # Action buttons row
+    # Final state label
+    with cols[btn_idx]:
+        final_label = "FINAL"
+        if st.session_state.chain_final_state:
+            final_label = st.session_state.chain_final_state.to_ket_text()
+            if len(final_label) > 8:
+                final_label = "FINAL"
+        st.button(final_label, key="chain_final_label", use_container_width=True, disabled=True)
+
+    # ── Bottom row: intermediate state numbers ──
+    # Only show if chain has been applied
+    states = st.session_state.get("chain_intermediate_states", [])
+    if states:
+        # Aligned with top row: [state0] [→gap] [state1] [→gap] ... [stateN+1]
+        num_states = len(states)
+        # We need to place state buttons at the arrow positions + start/end
+        # Layout mirrors top row: [s0] [s1] [gap] [s2] [gap] ... [sN]
+        state_cols = st.columns(top_cols)
+        # State 0 at position 0 (under INIT)
+        with state_cols[0]:
+            if st.button("0", key="inter_state_0", use_container_width=True):
+                st.session_state["_show_state_idx"] = 0
+                _show_state_detail()
+        # States 1..n-1 at arrow positions (between gate nodes)
+        state_idx = 1
+        col_pos = 1  # after INIT
+        for i in range(n):
+            col_pos += 1  # skip gate node column
+            if i < n - 1:
+                # This is an arrow column — place state button here
+                with state_cols[col_pos - 1]:
+                    if st.button(str(state_idx), key=f"inter_state_{state_idx}",
+                                 use_container_width=True):
+                        st.session_state["_show_state_idx"] = state_idx
+                        _show_state_detail()
+                state_idx += 1
+        # Final state at the last position
+        with state_cols[btn_idx]:
+            if st.button(str(num_states - 1), key=f"inter_state_{num_states - 1}",
+                         use_container_width=True):
+                st.session_state["_show_state_idx"] = num_states - 1
+                _show_state_detail()
+
+    # ── Action buttons ──
     st.markdown("")
     col_apply, col_reset = st.columns(2)
     with col_apply:

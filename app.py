@@ -260,7 +260,9 @@ with col_left:
 
 # ── Multi-gate chain ──────────────────────────────────────
 st.markdown("---")
-chain_controls = render_chain_controls()
+chain_controls = render_chain_controls(
+    initial_label=st.session_state.initial_state_label
+)
 
 if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
     result = generate_chain_frames(
@@ -286,52 +288,3 @@ if chain_controls["reset_clicked"]:
     st.session_state.chain_trigger += 1
     st.rerun()
 
-# Display chain final state
-if st.session_state.chain_final_state:
-    final = st.session_state.chain_final_state
-    fx, fy, fz = final.bloch_vector()
-    fp0, fp1 = final.probabilities()
-    st.markdown(
-        f"""
-        <div class="data-bar">
-            <div class="data-item">
-                <div class="data-label">Chain Final State</div>
-                <div class="data-value"><span class="ket">{final.to_ket_text()}</span></div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">Bloch Vector</div>
-                <div class="data-value">({fx:.4f}, {fy:.4f}, {fz:.4f})</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">P(|0⟩)</div>
-                <div class="data-value">{fp0*100:.1f}%</div>
-            </div>
-            <div class="data-item">
-                <div class="data-label">P(|1⟩)</div>
-                <div class="data-value">{fp1*100:.1f}%</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# Intermediate states
-if st.session_state.chain_intermediate_states:
-    st.markdown('<div class="inter-states-label">INTERMEDIATE STATES</div>',
-                unsafe_allow_html=True)
-    states = st.session_state.chain_intermediate_states
-    cols = st.columns(len(states))
-    for idx, istate in enumerate(states):
-        with cols[idx]:
-            if st.button(str(idx), key=f"inter_state_{idx}", use_container_width=True):
-                pass  # expander below handles display
-            with st.expander(f"State {idx}", expanded=False):
-                ket = istate.to_ket_text()
-                bx, by, bz = istate.bloch_vector()
-                p0, p1 = istate.probabilities()
-                st.markdown(
-                    f'<span class="ket">{ket}</span>',
-                    unsafe_allow_html=True,
-                )
-                st.caption(f"Bloch: ({bx:.4f}, {by:.4f}, {bz:.4f})")
-                st.caption(f"P(|0⟩) = {p0*100:.1f}%  P(|1⟩) = {p1*100:.1f}%")
