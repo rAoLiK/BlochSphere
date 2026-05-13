@@ -6,8 +6,8 @@ Professional 3D visualization using Streamlit + QuTiP + Three.js.
 import streamlit as st
 import numpy as np
 
-from quantum import BlochState, generate_chain_frames
-from ui import inject_styles, render_controls, render_gate_chain
+from quantum import BlochState, get_gate, generate_frames, generate_chain_frames
+from ui import inject_styles, render_controls, render_chain_controls
 from ui.display import render_state_display, render_gate_matrix
 from visualization import build_scene_html
 
@@ -24,6 +24,20 @@ inject_styles()
 # ── Session state init ──────────────────────────────────────────────
 if "bloch_state" not in st.session_state:
     st.session_state.bloch_state = BlochState(label="|0⟩")
+if "history" not in st.session_state:
+    st.session_state.history = [st.session_state.bloch_state]
+if "last_gate_label" not in st.session_state:
+    st.session_state.last_gate_label = "-"
+if "last_gate_angle" not in st.session_state:
+    st.session_state.last_gate_angle = 0.0
+if "last_axis" not in st.session_state:
+    st.session_state.last_axis = None
+if "last_matrix_tex" not in st.session_state:
+    st.session_state.last_matrix_tex = ""
+if "frames" not in st.session_state:
+    st.session_state.frames = []
+if "anim_trigger" not in st.session_state:
+    st.session_state.anim_trigger = 0
 if "last_custom_key" not in st.session_state:
     st.session_state.last_custom_key = None
 if "chain_frames" not in st.session_state:
@@ -76,6 +90,7 @@ with st.sidebar.expander("REFERENCE"):
 
 # ── Handle initial state change ─────────────────────────────────
 if controls["initial_state"] == "Custom":
+    # Only update when theta/phi actually changed
     custom_key = (controls["custom_theta"], controls["custom_phi"])
     if st.session_state.get("last_custom_key") != custom_key:
         st.session_state.bloch_state = BlochState(
@@ -83,24 +98,67 @@ if controls["initial_state"] == "Custom":
             phi=controls["custom_phi"],
         )
         st.session_state.last_custom_key = custom_key
-        # Clear chain when initial state changes
-        st.session_state.chain_frames = []
-        st.session_state.chain_boundaries = []
-        st.session_state.chain_labels = []
-        st.session_state.chain_details = []
-        st.session_state.chain_final_state = None
-        st.session_state.chain_trigger += 1
+        st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.last_gate_label = "-"
+        st.session_state.last_gate_angle = 0.0
+        st.session_state.last_axis = None
+        st.session_state.last_matrix_tex = ""
+        st.session_state.frames = []
+        st.session_state.anim_trigger += 1
 else:
     if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
         label = controls["initial_state"]
         st.session_state.bloch_state = BlochState(label=label)
         st.session_state.last_custom_key = None
-        st.session_state.chain_frames = []
-        st.session_state.chain_boundaries = []
-        st.session_state.chain_labels = []
-        st.session_state.chain_details = []
-        st.session_state.chain_final_state = None
-        st.session_state.chain_trigger += 1
+        st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.last_gate_label = "-"
+        st.session_state.last_gate_angle = 0.0
+        st.session_state.last_axis = None
+        st.session_state.last_matrix_tex = ""
+        st.session_state.frames = []
+        st.session_state.anim_trigger += 1
+
+# ── Handle gate application ─────────────────────────────────────────
+if controls["apply_clicked"]:
+    gate_name = controls["gate"]
+    theta = controls["theta"]
+    gate = get_gate(gate_name, theta)
+    result = generate_frames(
+        st.session_state.bloch_state,
+        gate,
+        num_frames=80,
+    )
+    st.session_state.bloch_state = result["final_state"]
+    st.session_state.history.append(st.session_state.bloch_state)
+    st.session_state.last_gate_label = gate["label"]
+    st.session_state.last_gate_angle = gate["angle"]
+    st.session_state.last_axis = gate["axis"]
+    st.session_state.last_matrix_tex = gate["matrix_tex"]
+    st.session_state.frames = result["frames"]
+    st.session_state.chain_frames = []
+    st.session_state.chain_boundaries = []
+    st.session_state.chain_labels = []
+    st.session_state.chain_details = []
+    st.session_state.chain_final_state = None
+    st.session_state.anim_trigger += 1
+
+# ── Handle reset ────────────────────────────────────────────────────
+if controls["reset_clicked"]:
+    if controls["initial_state"] == "Custom":
+        st.session_state.bloch_state = BlochState(
+            theta=controls["custom_theta"],
+            phi=controls["custom_phi"],
+        )
+    else:
+        initial_label = controls["initial_state"]
+        st.session_state.bloch_state = BlochState(label=initial_label)
+    st.session_state.history = [st.session_state.bloch_state]
+    st.session_state.last_gate_label = "-"
+    st.session_state.last_gate_angle = 0.0
+    st.session_state.last_axis = None
+    st.session_state.last_matrix_tex = ""
+    st.session_state.frames = []
+    st.session_state.anim_trigger += 1
 
 # ── Main layout ─────────────────────────────────────────────────────
 col_left, col_right = st.columns([0.38, 0.62])
@@ -111,51 +169,71 @@ with col_right:
 
     scene_data = {
         "bloch_vector": [x, y, z],
-        "frames": st.session_state.chain_frames,
-        "boundaries": st.session_state.chain_boundaries,
-        "labels": st.session_state.chain_labels,
-        "details": st.session_state.chain_details,
+        "frames": st.session_state.frames,
+        "axis": list(st.session_state.last_axis) if st.session_state.last_axis else [0, 0, 0],
+        "angle": st.session_state.last_gate_angle,
+        "gate_label": st.session_state.last_gate_label,
+        "prob0": state.probabilities()[0],
+        "prob1": state.probabilities()[1],
+        "state_text": state.to_ket_text(),
         "speed": controls["speed"],
+        "chain_frames": st.session_state.chain_frames,
+        "chain_boundaries": st.session_state.chain_boundaries,
+        "chain_labels": st.session_state.chain_labels,
+        "chain_details": st.session_state.chain_details,
     }
 
     scene_html = build_scene_html(scene_data)
-    scene_html += f"\n<!-- t:{st.session_state.chain_trigger} -->\n"
+    scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_{st.session_state.chain_trigger} -->\n"
     st.components.v1.html(
         scene_html,
         height=620,
     )
 
 with col_left:
-    # Show current state info
     state = st.session_state.bloch_state
     render_state_display(
         state_text=state.to_ket_text(),
         prob0=state.probabilities()[0],
         prob1=state.probabilities()[1],
-        gate_label=st.session_state.chain_labels[-1] if st.session_state.chain_labels else "-",
-        gate_angle=0.0,
+        gate_label=st.session_state.last_gate_label,
+        gate_angle=st.session_state.last_gate_angle,
         bloch_vector=state.bloch_vector(),
-        rotation_axis=None,
+        rotation_axis=st.session_state.last_axis,
     )
 
-    # Show chain final state if chain was applied
-    if st.session_state.chain_final_state:
-        final = st.session_state.chain_final_state
-        render_state_display(
-            state_text=final.to_ket_text(),
-            prob0=final.probabilities()[0],
-            prob1=final.probabilities()[1],
-            gate_label=" → ".join(st.session_state.chain_labels) if st.session_state.chain_labels else "-",
-            gate_angle=0.0,
-            bloch_vector=final.bloch_vector(),
-            rotation_axis=None,
+    # Gate matrix for the last applied gate
+    if st.session_state.last_matrix_tex:
+        render_gate_matrix(
+            st.session_state.last_gate_label,
+            st.session_state.last_matrix_tex,
         )
 
-# ── Gate chain ──────────────────────────────────────────────────
-st.markdown("---")
-chain_controls = render_gate_chain()
+    # Gate history
+    if len(st.session_state.history) > 1:
+        st.markdown("### GATE HISTORY")
+        for i, hist_state in enumerate(st.session_state.history):
+            if i == 0:
+                st.caption(f"Start: {hist_state.to_ket_text()}")
+            else:
+                st.caption(
+                    f"  {i}. [{st.session_state.last_gate_label}] "
+                    f"{hist_state.to_ket_text()}"
+                )
 
-if chain_controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
+    else:
+        # Show the matrix for the currently selected gate (preview)
+        gate_preview = get_gate(controls["gate"], controls["theta"])
+        render_gate_matrix(
+            gate_preview["label"],
+            gate_preview["matrix_tex"],
+        )
+
+# ── Multi-gate chain ──────────────────────────────────────
+st.markdown("---")
+chain_controls = render_chain_controls()
+
+if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
     result = generate_chain_frames(
         st.session_state.bloch_state,
         chain_controls["chain_gates"],
@@ -176,3 +254,32 @@ if chain_controls["reset_clicked"]:
     st.session_state.chain_final_state = None
     st.session_state.chain_trigger += 1
     st.rerun()
+
+# Display chain final state
+if st.session_state.chain_final_state:
+    final = st.session_state.chain_final_state
+    fx, fy, fz = final.bloch_vector()
+    fp0, fp1 = final.probabilities()
+    st.markdown(
+        f"""
+        <div class="data-bar">
+            <div class="data-item">
+                <div class="data-label">Chain Final State</div>
+                <div class="data-value"><span class="ket">{final.to_ket_text()}</span></div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Bloch Vector</div>
+                <div class="data-value">({fx:.4f}, {fy:.4f}, {fz:.4f})</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">P(|0⟩)</div>
+                <div class="data-value">{fp0*100:.1f}%</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">P(|1⟩)</div>
+                <div class="data-value">{fp1*100:.1f}%</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
