@@ -374,6 +374,101 @@ code { color: #ffaa00 !important; }
     padding: 10px 14px;
     margin-top: 0.5rem;
 }
+
+/* ── Chain horizontal layout ────────────────────────────── */
+.chain-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    padding: 12px 0;
+}
+
+.chain-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    height: 36px;
+    padding: 0 12px;
+    background: #0a0a0a;
+    border: 2px solid #ff6b00;
+    color: #ff6b00;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.chain-node:hover {
+    background: #ff6b00;
+    color: #0a0a0a;
+}
+
+.chain-arrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 6px;
+    color: #ff8c00;
+    font-size: 1.1rem;
+}
+
+.chain-add-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    background: transparent;
+    border: 2px dashed #555;
+    color: #555;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.chain-add-node:hover {
+    border-color: #ff6b00;
+    color: #ff6b00;
+}
+
+.chain-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+/* ── Intermediate states ────────────────────────────────── */
+.inter-states-label {
+    color: #777;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+.inter-state-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    margin-right: 4px;
+    background: #0a0a0a;
+    border: 2px solid #332211;
+    color: #cc8833;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.inter-state-btn:hover, .inter-state-btn.active {
+    border-color: #ff6b00;
+    color: #ff6b00;
+}
 """
 
 
