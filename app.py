@@ -6,8 +6,8 @@ Professional 3D visualization using Streamlit + QuTiP + Three.js.
 import streamlit as st
 import numpy as np
 
-from quantum import BlochState, get_gate, generate_frames
-from ui import inject_styles, render_controls
+from quantum import BlochState, get_gate, generate_frames, generate_chain_frames
+from ui import inject_styles, render_controls, render_chain_controls
 from ui.display import render_state_display, render_gate_matrix
 from visualization import build_scene_html
 
@@ -40,6 +40,18 @@ if "anim_trigger" not in st.session_state:
     st.session_state.anim_trigger = 0
 if "last_custom_key" not in st.session_state:
     st.session_state.last_custom_key = None
+if "chain_frames" not in st.session_state:
+    st.session_state.chain_frames = []
+if "chain_boundaries" not in st.session_state:
+    st.session_state.chain_boundaries = []
+if "chain_labels" not in st.session_state:
+    st.session_state.chain_labels = []
+if "chain_details" not in st.session_state:
+    st.session_state.chain_details = []
+if "chain_final_state" not in st.session_state:
+    st.session_state.chain_final_state = None
+if "chain_trigger" not in st.session_state:
+    st.session_state.chain_trigger = 0
 
 
 # ── Header ──────────────────────────────────────────────────────────
@@ -160,6 +172,10 @@ with col_right:
         "prob1": state.probabilities()[1],
         "state_text": state.to_ket_text(),
         "speed": controls["speed"],
+        "chain_frames": st.session_state.chain_frames,
+        "chain_boundaries": st.session_state.chain_boundaries,
+        "chain_labels": st.session_state.chain_labels,
+        "chain_details": st.session_state.chain_details,
     }
 
     scene_html = build_scene_html(scene_data)
@@ -207,3 +223,58 @@ with col_left:
             gate_preview["label"],
             gate_preview["matrix_tex"],
         )
+
+# ── Multi-gate chain ──────────────────────────────────────
+st.markdown("---")
+chain_controls = render_chain_controls()
+
+if chain_controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
+    result = generate_chain_frames(
+        st.session_state.bloch_state,
+        chain_controls["chain_gates"],
+    )
+    st.session_state.chain_frames = result["frames"]
+    st.session_state.chain_boundaries = result["boundaries"]
+    st.session_state.chain_labels = result["labels"]
+    st.session_state.chain_details = result["gate_details"]
+    st.session_state.chain_final_state = result["final_state"]
+    st.session_state.chain_trigger += 1
+    st.rerun()
+
+if chain_controls["reset_clicked"]:
+    st.session_state.chain_frames = []
+    st.session_state.chain_boundaries = []
+    st.session_state.chain_labels = []
+    st.session_state.chain_details = []
+    st.session_state.chain_final_state = None
+    st.session_state.chain_trigger += 1
+    st.rerun()
+
+# Display chain final state
+if st.session_state.chain_final_state:
+    final = st.session_state.chain_final_state
+    fx, fy, fz = final.bloch_vector()
+    fp0, fp1 = final.probabilities()
+    st.markdown(
+        f"""
+        <div class="data-bar">
+            <div class="data-item">
+                <div class="data-label">Chain Final State</div>
+                <div class="data-value"><span class="ket">{final.to_ket_text()}</span></div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Bloch Vector</div>
+                <div class="data-value">({fx:.4f}, {fy:.4f}, {fz:.4f})</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">P(|0⟩)</div>
+                <div class="data-value">{fp0*100:.1f}%</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">P(|1⟩)</div>
+                <div class="data-value">{fp1*100:.1f}%</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
