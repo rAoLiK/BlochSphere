@@ -50,6 +50,7 @@ def generate_chain_frames(initial: BlochState, gates: list[dict],
             labels: list of gate label strings
             gate_details: list of gate dicts with axis/angle for Three.js
             final_state: BlochState after all gates applied
+            intermediate_states: list of BlochState at each gate boundary
     """
     from .gates import get_gate
 
@@ -57,6 +58,7 @@ def generate_chain_frames(initial: BlochState, gates: list[dict],
     boundaries = []
     labels = []
     gate_details = []
+    intermediate_states = [initial]  # state before any gate
     current_state = initial
 
     for g in gates:
@@ -71,6 +73,7 @@ def generate_chain_frames(initial: BlochState, gates: list[dict],
         result = generate_frames(current_state, gate, num_frames_per_gate)
         all_frames.extend(result["frames"])
         current_state = result["final_state"]
+        intermediate_states.append(current_state)
 
     return {
         "frames": all_frames,
@@ -78,6 +81,7 @@ def generate_chain_frames(initial: BlochState, gates: list[dict],
         "labels": labels,
         "gate_details": gate_details,
         "final_state": current_state,
+        "intermediate_states": intermediate_states,
     }
 
 

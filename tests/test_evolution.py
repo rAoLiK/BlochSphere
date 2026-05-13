@@ -63,3 +63,19 @@ def test_chain_fills_axis_and_angle():
     assert "axis" in g
     assert "angle" in g
     assert g["label"] == "H"
+    assert len(result["intermediate_states"]) == 2
+
+
+def test_chain_intermediate_states():
+    """generate_chain_frames should return intermediate states including initial."""
+    initial = BlochState(label="|0⟩")
+    gates = [{"type": "X", "theta": 0.0}, {"type": "Z", "theta": 0.0}]
+    result = generate_chain_frames(initial, gates)
+    # 3 states: initial, after X, after Z
+    assert len(result["intermediate_states"]) == 3
+    # First state is |0⟩
+    x0, y0, z0 = result["intermediate_states"][0].bloch_vector()
+    assert abs(z0 - 1.0) < 1e-10
+    # After X: |1⟩
+    x1, y1, z1 = result["intermediate_states"][1].bloch_vector()
+    assert abs(z1 + 1.0) < 1e-10
