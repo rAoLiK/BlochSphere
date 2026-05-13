@@ -28,6 +28,8 @@ if "history" not in st.session_state:
     st.session_state.history = [st.session_state.bloch_state]
 if "history_labels" not in st.session_state:
     st.session_state.history_labels = ["-"]
+if "initial_state_label" not in st.session_state:
+    st.session_state.initial_state_label = "|0⟩"
 if "last_gate_label" not in st.session_state:
     st.session_state.last_gate_label = "-"
 if "last_gate_angle" not in st.session_state:
@@ -100,6 +102,7 @@ if controls["initial_state"] == "Custom":
             phi=controls["custom_phi"],
         )
         st.session_state.last_custom_key = custom_key
+        st.session_state.initial_state_label = "Custom"
         st.session_state.history = [st.session_state.bloch_state]
         st.session_state.history_labels = ["-"]
         st.session_state.last_gate_label = "-"
@@ -109,9 +112,10 @@ if controls["initial_state"] == "Custom":
         st.session_state.frames = []
         st.session_state.anim_trigger += 1
 else:
-    if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
+    if controls["initial_state"] != st.session_state.initial_state_label:
         label = controls["initial_state"]
         st.session_state.bloch_state = BlochState(label=label)
+        st.session_state.initial_state_label = label
         st.session_state.last_custom_key = None
         st.session_state.history = [st.session_state.bloch_state]
         st.session_state.history_labels = ["-"]
