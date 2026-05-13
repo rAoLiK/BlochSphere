@@ -168,6 +168,12 @@ if controls["reset_clicked"]:
     st.session_state.last_axis = None
     st.session_state.last_matrix_tex = ""
     st.session_state.frames = []
+    st.session_state.chain_frames = []
+    st.session_state.chain_boundaries = []
+    st.session_state.chain_labels = []
+    st.session_state.chain_details = []
+    st.session_state.chain_final_state = None
+    st.session_state.chain_trigger += 1
     st.session_state.anim_trigger += 1
 
 # ── Main layout ─────────────────────────────────────────────────────
