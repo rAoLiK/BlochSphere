@@ -135,8 +135,6 @@ def render_chain_controls() -> dict:
                 label_visibility="collapsed",
             )
             st.session_state.chain_gates[i]["type"] = new_type
-            if new_type != gate_type:
-                st.rerun()
 
             if new_type in ("Rx", "Ry", "Rz"):
                 angle_deg = st.slider(
@@ -147,9 +145,14 @@ def render_chain_controls() -> dict:
                     step=1.0,
                     key=f"chain_gate_angle_{i}",
                 )
-                st.session_state.chain_gates[i]["theta"] = np.radians(angle_deg)
+                new_theta = np.radians(angle_deg)
+                st.session_state.chain_gates[i]["theta"] = new_theta
+                if new_type != gate_type or abs(new_theta - gate_theta) > 1e-6:
+                    st.rerun()
             else:
                 st.session_state.chain_gates[i]["theta"] = 0.0
+                if new_type != gate_type:
+                    st.rerun()
 
             if len(st.session_state.chain_gates) > 1:
                 if st.button("REMOVE", key=f"chain_remove_{i}",
