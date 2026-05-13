@@ -5,9 +5,14 @@ from qutip import Qobj, basis, sigmax, sigmay, sigmaz
 class BlochState:
     """Single-qubit pure state on the Bloch sphere."""
 
-    def __init__(self, ket: Qobj | None = None, label: str = "|0⟩"):
+    def __init__(self, ket: Qobj | None = None, label: str = "|0⟩",
+                 theta: float | None = None, phi: float | None = None):
         if ket is not None:
             self.ket = ket
+        elif theta is not None and phi is not None:
+            alpha = np.cos(theta / 2)
+            beta = np.exp(1j * phi) * np.sin(theta / 2)
+            self.ket = Qobj([[alpha], [beta]])
         elif label == "|0⟩":
             self.ket = basis(2, 0)
         elif label == "|1⟩":
