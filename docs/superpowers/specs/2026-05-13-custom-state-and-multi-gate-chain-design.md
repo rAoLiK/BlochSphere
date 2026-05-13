@@ -60,7 +60,8 @@ def __init__(self, ket=None, label="|0⟩", theta=None, phi=None):
 
 - `INITIAL_STATES` 增加 `"Custom"`
 - `render_controls()` 中，当选中 "Custom" 时渲染两个滑块
-- 返回值增加 `custom_theta` 和 `custom_phi` 字段
+- 返回值增加 `custom_theta` 和 `custom_phi` 字段（非 Custom 时为 None）
+- Custom 模式下，滑块下方显示实时 Bloch 坐标: `(sin θ cos φ, sin θ sin φ, cos θ)`
 
 #### `app.py`
 
@@ -68,13 +69,21 @@ def __init__(self, ket=None, label="|0⟩", theta=None, phi=None):
 
 ```python
 if controls["initial_state"] == "Custom":
+    # Custom 模式：每次滑块变化都更新态（Streamlit 自动 rerun）
     st.session_state.bloch_state = BlochState(
         theta=controls["custom_theta"],
         phi=controls["custom_phi"],
     )
+    st.session_state.history = [st.session_state.bloch_state]
+    st.session_state.frames = []
+    st.session_state.anim_trigger += 1
 else:
+    # 预设模式：仅在选择变化时更新
     if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
         st.session_state.bloch_state = BlochState(label=controls["initial_state"])
+        st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.frames = []
+        st.session_state.anim_trigger += 1
 ```
 
 ---
@@ -170,9 +179,12 @@ def generate_chain_frames(initial, gates, num_frames_per_gate=80):
 Three.js 动画逻辑改动：
 - 当 `chain_frames` 非空时，优先播放链动画
 - 动画帧索引 `i` 通过 `boundaries` 判断当前属于哪个门
+- 每段动画使用对应门的旋转轴高亮（黄色虚线）和轨迹弧（橙色弧线）
+- 门切换时清除前一段的轨迹弧，绘制新一段的弧
 - 更新 UI 上显示的门标签为当前正在播放的门
 - 每个门的旋转段无缝衔接（前门终点 = 后门起点）
-- 门切换时更新旋转轴高亮和轨迹弧
+
+`chain_gates` 中每个门需包含 `axis` 和 `angle` 字段供 Three.js 使用，由 `generate_chain_frames` 在计算时填充。
 
 ### UI 控件
 
