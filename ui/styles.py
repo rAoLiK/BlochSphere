@@ -313,6 +313,19 @@ code { color: #ffaa00 !important; }
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Chain section ────────────────────────────────────── */
+.chain-gate-expander {
+    border: 1px solid #332211 !important;
+    margin-bottom: 4px !important;
+}
+.chain-final-state {
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #ff6b00;
+    padding: 10px 14px;
+    margin-top: 0.5rem;
+}
 """
 
 
