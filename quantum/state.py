@@ -7,12 +7,28 @@ class BlochState:
 
     def __init__(self, ket: Qobj | None = None, label: str = "|0⟩",
                  theta: float | None = None, phi: float | None = None):
+        """
+        Construct a single-qubit pure state.
+
+        Parameters
+        ----------
+        ket : Qobj, optional
+            Explicit ket vector. Takes priority over all other parameters.
+        label : str
+            Predefined state label (``"|0⟩"``, ``"|1⟩"``, ``"|+⟩"``).
+            Ignored when *ket* or *theta*/*phi* are given.
+        theta : float, optional
+            Bloch-sphere colatitude in radians, measured from +Z (north pole).
+        phi : float, optional
+            Bloch-sphere azimuthal angle in radians, measured from +X in the
+            X-Y plane.  Must be supplied together with *theta*.
+        """
+        if (theta is None) != (phi is None):
+            raise ValueError("theta and phi must both be provided, or neither")
         if ket is not None:
             self.ket = ket
         elif theta is not None and phi is not None:
-            alpha = np.cos(theta / 2)
-            beta = np.exp(1j * phi) * np.sin(theta / 2)
-            self.ket = Qobj([[alpha], [beta]])
+            self.ket = self._polar_to_ket(theta, phi)
         elif label == "|0⟩":
             self.ket = basis(2, 0)
         elif label == "|1⟩":
@@ -73,6 +89,26 @@ class BlochState:
         return BlochState(ket=new_ket)
 
     @staticmethod
+    def _polar_to_ket(theta: float, phi: float) -> Qobj:
+        """Convert Bloch-sphere polar angles to a qubit ket vector.
+
+        Parameters
+        ----------
+        theta : float
+            Colatitude from +Z in radians.
+        phi : float
+            Azimuthal angle from +X in the X-Y plane, in radians.
+
+        Returns
+        -------
+        Qobj
+            A 2-element column ket.
+        """
+        alpha = np.cos(theta / 2)
+        beta = np.exp(1j * phi) * np.sin(theta / 2)
+        return Qobj([[alpha], [beta]])
+
+    @staticmethod
     def from_bloch_vector(x: float, y: float, z: float) -> "BlochState":
         """Construct state from Bloch vector coordinates."""
         r = np.sqrt(x**2 + y**2 + z**2)
@@ -80,7 +116,5 @@ class BlochState:
             r = 1.0
         theta = np.arccos(np.clip(z / r, -1, 1)) if r > 1e-10 else 0
         phi = np.arctan2(y, x) if r > 1e-10 else 0
-        alpha = np.cos(theta / 2)
-        beta = np.exp(1j * phi) * np.sin(theta / 2)
-        ket = Qobj([[alpha], [beta]])
+        ket = BlochState._polar_to_ket(theta, phi)
         return BlochState(ket=ket)

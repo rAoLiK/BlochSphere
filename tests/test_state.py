@@ -1,5 +1,18 @@
+import pytest
 import numpy as np
 from quantum.state import BlochState
+
+
+def test_partial_theta_raises():
+    """Providing theta without phi must raise ValueError."""
+    with pytest.raises(ValueError, match="theta and phi must both be provided"):
+        BlochState(theta=0.5)
+
+
+def test_partial_phi_raises():
+    """Providing phi without theta must raise ValueError."""
+    with pytest.raises(ValueError, match="theta and phi must both be provided"):
+        BlochState(phi=1.0)
 
 
 def test_custom_state_north_pole():
