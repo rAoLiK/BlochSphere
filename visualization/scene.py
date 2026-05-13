@@ -368,9 +368,31 @@ function updateChainTrajectory(frameIdx) {{
     while (trajGroup.children.length > 0) trajGroup.remove(trajGroup.children[0]);
     if (!frames || frames.length < 2) return;
 
-    const segIdx = getGateIndex(frameIdx);
-    const segStart = boundaries[segIdx] || 0;
-    const segEnd = (segIdx + 1 < boundaries.length) ? boundaries[segIdx + 1] : frames.length;
+    const currentSeg = getGateIndex(frameIdx);
+
+    // Render completed segments with fading opacity
+    for (let s = 0; s < currentSeg; s++) {{
+        const sStart = boundaries[s] || 0;
+        const sEnd = (s + 1 < boundaries.length) ? boundaries[s + 1] : frames.length;
+        const segFrames = frames.slice(sStart, sEnd);
+        if (segFrames.length < 2) continue;
+
+        const fadeFactor = (currentSeg - s);
+        const opacity = Math.max(0.12, 0.6 - fadeFactor * 0.2);
+
+        const curve = new THREE.CatmullRomCurve3(
+            segFrames.map(p => new THREE.Vector3(p[0], p[1], p[2])));
+        const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
+        const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
+            color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 0.4,
+            roughness: 0.2, transparent: true, opacity: opacity
+        }}));
+        trajGroup.add(tube);
+    }}
+
+    // Render current segment up to current frame
+    const segStart = boundaries[currentSeg] || 0;
+    const segEnd = (currentSeg + 1 < boundaries.length) ? boundaries[currentSeg + 1] : frames.length;
     const shown = frames.slice(segStart, Math.min(frameIdx + 1, segEnd));
     if (shown.length < 2) return;
 

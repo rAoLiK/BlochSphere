@@ -179,10 +179,11 @@ with col_right:
     }
 
     scene_html = build_scene_html(scene_data)
-    scene_html += f"\n<!-- trigger:{st.session_state.anim_trigger} -->\n"
+    scene_key = f"scene_{st.session_state.anim_trigger}_{st.session_state.chain_trigger}"
     st.components.v1.html(
         scene_html,
         height=620,
+        key=scene_key,
     )
 
 with col_left:
@@ -228,7 +229,7 @@ with col_left:
 st.markdown("---")
 chain_controls = render_chain_controls()
 
-if chain_controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
+if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
     result = generate_chain_frames(
         st.session_state.bloch_state,
         chain_controls["chain_gates"],
