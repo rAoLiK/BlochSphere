@@ -314,6 +314,54 @@ code { color: #ffaa00 !important; }
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Gate history ────────────────────────────────────── */
+.hist-container {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #ff6b00;
+    background: #0d0d0d;
+    padding: 0;
+    margin-top: 0.4rem;
+}
+.hist-container::-webkit-scrollbar { width: 4px; }
+.hist-container::-webkit-scrollbar-track { background: #0d0d0d; }
+.hist-container::-webkit-scrollbar-thumb { background: #332211; }
+.hist-container::-webkit-scrollbar-thumb:hover { background: #ff6b00; }
+
+.hist-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 10px;
+    border-bottom: 1px solid #1a1a1a;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.72rem;
+    line-height: 1.6;
+}
+.hist-row:last-child { border-bottom: none; }
+.hist-row:nth-child(odd) { background: #0f0f0f; }
+
+.hist-idx {
+    color: #555;
+    min-width: 18px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.hist-gate {
+    color: #ff8c00;
+    font-weight: 700;
+    min-width: 48px;
+    letter-spacing: 0.5px;
+}
+.hist-ket {
+    color: #ffaa00;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* ── Chain section ────────────────────────────────────── */
 .chain-gate-expander {
     border: 1px solid #332211 !important;

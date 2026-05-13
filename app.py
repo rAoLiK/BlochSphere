@@ -26,6 +26,8 @@ if "bloch_state" not in st.session_state:
     st.session_state.bloch_state = BlochState(label="|0⟩")
 if "history" not in st.session_state:
     st.session_state.history = [st.session_state.bloch_state]
+if "history_labels" not in st.session_state:
+    st.session_state.history_labels = ["-"]
 if "last_gate_label" not in st.session_state:
     st.session_state.last_gate_label = "-"
 if "last_gate_angle" not in st.session_state:
@@ -99,6 +101,7 @@ if controls["initial_state"] == "Custom":
         )
         st.session_state.last_custom_key = custom_key
         st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.history_labels = ["-"]
         st.session_state.last_gate_label = "-"
         st.session_state.last_gate_angle = 0.0
         st.session_state.last_axis = None
@@ -111,6 +114,7 @@ else:
         st.session_state.bloch_state = BlochState(label=label)
         st.session_state.last_custom_key = None
         st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.history_labels = ["-"]
         st.session_state.last_gate_label = "-"
         st.session_state.last_gate_angle = 0.0
         st.session_state.last_axis = None
@@ -130,6 +134,7 @@ if controls["apply_clicked"]:
     )
     st.session_state.bloch_state = result["final_state"]
     st.session_state.history.append(st.session_state.bloch_state)
+    st.session_state.history_labels.append(gate["label"])
     st.session_state.last_gate_label = gate["label"]
     st.session_state.last_gate_angle = gate["angle"]
     st.session_state.last_axis = gate["axis"]
@@ -153,6 +158,7 @@ if controls["reset_clicked"]:
         initial_label = controls["initial_state"]
         st.session_state.bloch_state = BlochState(label=initial_label)
     st.session_state.history = [st.session_state.bloch_state]
+    st.session_state.history_labels = ["-"]
     st.session_state.last_gate_label = "-"
     st.session_state.last_gate_angle = 0.0
     st.session_state.last_axis = None
@@ -212,14 +218,23 @@ with col_left:
     # Gate history
     if len(st.session_state.history) > 1:
         st.markdown("### GATE HISTORY")
+        rows = []
         for i, hist_state in enumerate(st.session_state.history):
+            ket = hist_state.to_ket_text()
             if i == 0:
-                st.caption(f"Start: {hist_state.to_ket_text()}")
+                rows.append(f'<div class="hist-row"><span class="hist-idx">0</span>'
+                            f'<span class="hist-gate">INIT</span>'
+                            f'<span class="hist-ket">{ket}</span></div>')
             else:
-                st.caption(
-                    f"  {i}. [{st.session_state.last_gate_label}] "
-                    f"{hist_state.to_ket_text()}"
-                )
+                gate_name = st.session_state.history_labels[i]
+                rows.append(f'<div class="hist-row"><span class="hist-idx">{i}</span>'
+                            f'<span class="hist-gate">{gate_name}</span>'
+                            f'<span class="hist-ket">{ket}</span></div>')
+        history_html = "\n".join(rows)
+        st.markdown(
+            f'<div class="hist-container">{history_html}</div>',
+            unsafe_allow_html=True,
+        )
 
     else:
         # Show the matrix for the currently selected gate (preview)
