@@ -74,10 +74,12 @@ with st.sidebar.expander("REFERENCE"):
         unsafe_allow_html=True,
     )
 
-# ── Handle initial state change ─────────────────────────────────────
-if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
-    label = controls["initial_state"]
-    st.session_state.bloch_state = BlochState(label=label)
+# ── Handle initial state change ─────────────────────────────────
+if controls["initial_state"] == "Custom":
+    st.session_state.bloch_state = BlochState(
+        theta=controls["custom_theta"],
+        phi=controls["custom_phi"],
+    )
     st.session_state.history = [st.session_state.bloch_state]
     st.session_state.last_gate_label = "-"
     st.session_state.last_gate_angle = 0.0
@@ -85,6 +87,17 @@ if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
     st.session_state.last_matrix_tex = ""
     st.session_state.frames = []
     st.session_state.anim_trigger += 1
+else:
+    if controls["initial_state"] != st.session_state.bloch_state.to_ket_text():
+        label = controls["initial_state"]
+        st.session_state.bloch_state = BlochState(label=label)
+        st.session_state.history = [st.session_state.bloch_state]
+        st.session_state.last_gate_label = "-"
+        st.session_state.last_gate_angle = 0.0
+        st.session_state.last_axis = None
+        st.session_state.last_matrix_tex = ""
+        st.session_state.frames = []
+        st.session_state.anim_trigger += 1
 
 # ── Handle gate application ─────────────────────────────────────────
 if controls["apply_clicked"]:
