@@ -204,7 +204,7 @@ with tab_single:
 
         scene_html = build_scene_html(scene_data)
         scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_0 -->\n"
-        st.components.v1.html(scene_html, height=560)
+        st.iframe(scene_html, height=560)
 
     with col_left:
         state = st.session_state.bloch_state
@@ -296,7 +296,7 @@ with tab_chain:
         }
         scene_html = build_scene_html(scene_data)
         scene_html += f"\n<!-- tc:{st.session_state.chain_trigger} -->\n"
-        st.components.v1.html(scene_html, height=500)
+        st.iframe(scene_html, height=500)
 
         # Chain final state
         if st.session_state.chain_final_state:
