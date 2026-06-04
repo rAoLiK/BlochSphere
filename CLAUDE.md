@@ -43,7 +43,7 @@ Three-layer design orchestrated by `app.py`, which uses a two-tab layout ("SINGL
    - `display.py`: `render_state_display()` (Dirac notation, probabilities bar, Bloch coords), `render_gate_matrix()` (LaTeX rendering).
    - `styles.py`: Two themes (dark: black-orange retro-futuristic; light: warm-gray + muted rose). Uses CSS custom properties. Light mode includes a JS MutationObserver for popover/portal styling.
 
-3. **`visualization/`** — `scene.py` builds a standalone HTML page with embedded Three.js v0.160.0 (CDN via importmap). Injected into Streamlit via `st.iframe()`. Contains all 3D geometry, animation controls, CRT scanline overlay, and chain animation support.
+3. **`visualization/`** — `scene.py` builds a standalone HTML page with embedded Three.js v0.160.0 (CDN via importmap). Injected into Streamlit via `st.iframe()`. Contains all 3D geometry, animation controls, CRT scanline overlay, and chain animation support. Also includes `gif_export.py` which uses qutip.Bloch + matplotlib.animation.FuncAnimation + PillowWriter to generate animated GIF exports of the current state evolution.
 
 ## Data Flow
 
@@ -64,6 +64,7 @@ User interaction (sidebar controls)
 - **Animation is client-side** — Python computes (x,y,z) Bloch vector frames; Three.js renders them. The `speed` parameter controls frame rate in the browser.
 - **Gate definitions are dicts** — `axis` and `angle` fields drive both trajectory computation and 3D rotation axis highlight.
 - **Animation trigger mechanism** — integer counters (`anim_trigger`, `chain_trigger`) are appended as HTML comments to the scene HTML to force Streamlit to re-render the iframe when data changes.
+- **CSS architecture in `styles.py`** — all component CSS (buttons, inputs, tabs, popovers, etc.) lives in the **base template** (applied to both themes). The `light_overrides` string contains **only** text/background color overrides for light mode. This ensures component styling (borders, radius, focus states) works in both themes. Popover/dialog portals render outside the main DOM, so they need explicit `[data-baseweb="popover"]` and `[role="dialog"]` CSS rules for widgets inside them.
 
 ## Session State Keys
 
