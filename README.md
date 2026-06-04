@@ -10,7 +10,7 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 - State vector smoothly animating through gate operations
 - Trajectory arcs tracing the evolution path on the sphere surface
 - Gate support: X, Y, Z (Pauli), H (Hadamard), Rx, Ry, Rz (parametric rotation)
-- Initial states: |0>, |1>, |+>, or custom polar coordinates (theta, phi)
+- Initial states: $|0\rangle$, $|1\rangle$, $|+\rangle$, or custom polar coordinates $(\theta, \phi)$
 - Multi-gate chain mode: configure and execute a sequence of gates with intermediate state display
 - Real-time data: Dirac notation, measurement probabilities, Bloch coordinates
 - GIF export: generate animated GIFs for presentations and documentation
@@ -38,6 +38,60 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 ---
 
+## Live Demo
+
+### Single Gate Animation
+
+Apply a single quantum gate and watch the state vector evolve in real time.
+
+![Single Gate Dark](./fig/gif/screen/template_single.gif)
+
+![Single Gate Light](./fig/gif/screen/template_single_light.gif)
+
+### Gate Chain Animation
+
+Configure a sequence of gates and observe the full evolution path with intermediate states.
+
+![Gate Chain Dark](./fig/gif/screen/template_chain.gif)
+
+![Gate Chain Light](./fig/gif/screen/template_chain_light.gif)
+
+### Operation Tutorial
+
+Step-by-step walkthrough of basic gate operations and multi-gate chains.
+
+![Basic Tutorial 1](./fig/gif/screen/tutor_basic_1.gif)
+
+![Basic Tutorial 2](./fig/gif/screen/tutor_basic_2.gif)
+
+![Chain Tutorial](./fig/gif/screen/tutor_chain_1.gif)
+
+---
+
+## GIF Export Preview
+
+The application can export animated GIFs of the Bloch sphere evolution. Below are examples of exported GIFs for each gate type.
+
+### Single Gate Exports
+
+| Gate | GIF Preview | Description |
+|------|-------------|-------------|
+| X | ![X gate](./fig/gif/singlegate/0_X.gif) | Bit flip: rotation about the $x$-axis by $\pi$ |
+| Y | ![Y gate](./fig/gif/singlegate/1_Y.gif) | Bit-phase flip: rotation about the $y$-axis by $\pi$ |
+| Z | ![Z gate](./fig/gif/singlegate/2_Z.gif) | Phase flip: rotation about the $z$-axis by $\pi$ |
+| H | ![H gate](./fig/gif/singlegate/3_H.gif) | Hadamard: rotation about $(x+z)/\sqrt{2}$ by $\pi$ |
+| Rx | ![Rx gate](./fig/gif/singlegate/4_Rx(1.97).gif) | Rotation about $x$-axis by $\theta = 1.97$ rad |
+| Ry | ![Ry gate](./fig/gif/singlegate/5_Ry(1.97).gif) | Rotation about $y$-axis by $\theta = 1.97$ rad |
+| Rz | ![Rz gate](./fig/gif/singlegate/6_Rz(1.97).gif) | Rotation about $z$-axis by $\theta = 1.97$ rad |
+
+### Gate Chain Export
+
+| Chain | GIF Preview | Description |
+|-------|-------------|-------------|
+| Multi-gate | ![Chain](./fig/gif/multigate/bloch_chain.gif) | Composite evolution through a user-defined gate sequence |
+
+---
+
 ## Quick Start
 
 ### Prerequisites
@@ -47,18 +101,19 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 ### Installation
 
+```bash
+git clone git@github.com:rAoLiK/BlochSphere.git
+cd BlochSphere
+```
+
 **Linux / WSL:**
 ```bash
-git clone https://github.com/<your-username>/Bloch_v4.git
-cd Bloch_v4
 bash env/setup.sh
 conda activate bloch
 ```
 
 **Windows:**
 ```cmd
-git clone https://github.com/<your-username>/Bloch_v4.git
-cd Bloch_v4
 env\setup.bat
 conda activate bloch
 ```
@@ -85,15 +140,13 @@ python -m pytest tests/ -v
 
 The "SINGLE GATE" tab lets you apply one quantum gate at a time and observe the result.
 
-1. Select an initial state from the sidebar: |0>, |1>, |+>, or enter custom polar coordinates (theta, phi).
+1. Select an initial state from the sidebar: $|0\rangle$, $|1\rangle$, $|+\rangle$, or enter custom polar coordinates $(\theta, \phi)$.
 2. Choose a gate: X, Y, Z, H, Rx, Ry, or Rz.
 3. For rotation gates (Rx/Ry/Rz), adjust the angle with the slider.
 4. Click APPLY to execute the gate. The state vector animates from the initial state to the final state, with a trajectory arc drawn on the sphere surface.
 5. Use the mouse to rotate/zoom the 3D view. Use the animation controls below the sphere for playback.
 
 The sidebar displays the current state in Dirac notation, measurement probabilities, and Bloch coordinates in real time.
-
-![Single Gate Demo](./fig/gif/singlegate/0_X.gif)
 
 ### Gate Chain Mode
 
@@ -103,8 +156,6 @@ The "GATE CHAIN" tab lets you configure a sequence of multiple gates and execute
 2. Configure each gate's type and parameters by clicking on its card.
 3. Click "APPLY CHAIN" to execute the full sequence. The animation shows the state evolving through each gate, with intermediate states displayed in a table.
 4. Use the animation speed slider to control playback speed.
-
-![Gate Chain Demo](./fig/gif/multigate/bloch_chain.gif)
 
 ### GIF Export
 
@@ -121,63 +172,66 @@ Click "EXPORT GIF" in the sidebar to generate an animated GIF of the current sta
 
 Any pure state of a single qubit can be written as:
 
-|psi> = cos(theta/2) |0> + e^(i*phi) sin(theta/2) |1>
+$$|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$$
 
-where theta in [0, pi] is the polar angle and phi in [0, 2*pi) is the azimuthal angle. This parameterization maps every qubit state to a point on the unit sphere in R^3, known as the Bloch sphere. The north pole corresponds to |0>, the south pole to |1>, and the equatorial states are equal superpositions of |0> and |1> with varying relative phase.
+where $\theta \in [0, \pi]$ is the polar angle and $\phi \in [0, 2\pi)$ is the azimuthal angle. This parameterization maps every qubit state to a point on the unit sphere in $\mathbb{R}^3$, known as the Bloch sphere. The north pole corresponds to $|0\rangle$, the south pole to $|1\rangle$, and the equatorial states are equal superpositions of $|0\rangle$ and $|1\rangle$ with varying relative phase.
 
-The Bloch vector (x, y, z) for a state |psi> is given by the expectation values of the Pauli matrices:
+The Bloch vector $\mathbf{r} = (x, y, z)$ for a state $|\psi\rangle$ is given by the expectation values of the Pauli matrices:
 
-x = <sigma_x>,  y = <sigma_y>,  z = <sigma_z>
+$$x = \langle\sigma_x\rangle, \quad y = \langle\sigma_y\rangle, \quad z = \langle\sigma_z\rangle$$
 
-For a pure state, this vector has unit length and lies on the surface of the Bloch sphere. Mixed states (density matrices with Tr(rho^2) < 1) lie inside the sphere.
+For a pure state, this vector has unit length and lies on the surface of the Bloch sphere. Mixed states (density matrices with $\mathrm{Tr}(\rho^2) < 1$) lie inside the sphere.
 
 ### Quantum Gates as Rotations
 
-Single-qubit gates correspond to rotations of the Bloch vector. Every unitary gate U can be expressed as a rotation by angle theta about some axis n:
+Single-qubit gates correspond to rotations of the Bloch vector. Every unitary gate $U$ can be expressed as a rotation by angle $\theta$ about some axis $\hat{n}$:
 
-U = exp(-i * theta/2 * n . sigma) = cos(theta/2) I - i sin(theta/2) (n . sigma)
+$$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
 
-where n is a unit vector and sigma = (sigma_x, sigma_y, sigma_z) are the Pauli matrices.
+where $\hat{n}$ is a unit vector and $\boldsymbol{\sigma} = (\sigma_x, \sigma_y, \sigma_z)$ are the Pauli matrices.
 
 The standard gates implemented in this application:
 
 | Gate | Axis | Angle | Description |
 |------|------|-------|-------------|
-| X | x | pi | Bit flip: |0> <-> |1> |
-| Y | y | pi | Bit-phase flip |
-| Z | z | pi | Phase flip: |1> -> -|1> |
-| H | (x+z)/sqrt(2) | pi | Creates equal superposition |
-| Rx(theta) | x | theta | Arbitrary rotation about x |
-| Ry(theta) | y | theta | Arbitrary rotation about y |
-| Rz(theta) | z | theta | Arbitrary rotation about z |
+| X | $\hat{x}$ | $\pi$ | Bit flip: $\|0\rangle \leftrightarrow \|1\rangle$ |
+| Y | $\hat{y}$ | $\pi$ | Bit-phase flip |
+| Z | $\hat{z}$ | $\pi$ | Phase flip: $\|1\rangle \to -\|1\rangle$ |
+| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | Creates equal superposition |
+| Rx($\theta$) | $\hat{x}$ | $\theta$ | Arbitrary rotation about $x$ |
+| Ry($\theta$) | $\hat{y}$ | $\theta$ | Arbitrary rotation about $y$ |
+| Rz($\theta$) | $\hat{z}$ | $\theta$ | Arbitrary rotation about $z$ |
 
-The Hadamard gate H deserves special attention: it rotates the state by pi about an axis tilted 45 degrees between x and z. This maps |0> to |+> = (|0>+|1>)/sqrt(2) and |1> to |-> = (|0>-|1>)/sqrt(2).
+The Hadamard gate H deserves special attention: it rotates the state by $\pi$ about an axis tilted $45^\circ$ between $\hat{x}$ and $\hat{z}$. This maps $|0\rangle$ to $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$ and $|1\rangle$ to $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$.
 
 ### State Evolution and Trajectory
 
-When a gate U is applied to a state |psi>, the Bloch vector rotates along a great circle arc on the sphere surface. The axis of rotation is the gate's axis, and the angle is the gate's angle. This application visualizes this evolution by interpolating the rotation in small steps, producing a smooth animation that traces the trajectory arc.
+When a gate $U$ is applied to a state $|\psi\rangle$, the Bloch vector rotates along a great circle arc on the sphere surface. The axis of rotation is the gate's axis, and the angle is the gate's angle. This application visualizes this evolution by interpolating the rotation in small steps, producing a smooth animation that traces the trajectory arc.
 
-For a chain of gates U_1, U_2, ..., U_n, the final state is:
+For a chain of gates $U_1, U_2, \ldots, U_n$, the final state is:
 
-|psi_final> = U_n ... U_2 U_1 |psi_initial>
+$$|\psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,|\psi_{\mathrm{initial}}\rangle$$
 
 The trajectory is the concatenation of the individual arcs, with the endpoint of each gate serving as the starting point of the next.
 
 ### Measurement and Probabilities
 
-When a qubit in state |psi> = alpha|0> + beta|1> is measured in the computational basis:
+When a qubit in state $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$ is measured in the computational basis:
 
-- Probability of observing 0: P(0) = |alpha|^2 = cos^2(theta/2)
-- Probability of observing 1: P(1) = |beta|^2 = sin^2(theta/2)
+$$P(0) = |\alpha|^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = |\beta|^2 = \sin^2\frac{\theta}{2}$$
 
-The z-component of the Bloch vector encodes this: z = cos(theta) = P(0) - P(1). States near the north pole (z close to 1) have a high probability of measuring 0, while states near the south pole (z close to -1) have a high probability of measuring 1.
+The $z$-component of the Bloch vector encodes this:
+
+$$z = \cos\theta = P(0) - P(1)$$
+
+States near the north pole ($z \approx 1$) have a high probability of measuring $0$; states near the south pole ($z \approx -1$) have a high probability of measuring $1$.
 
 ---
 
 ## Project Structure
 
 ```
-Bloch_v4/
+BlochSphere/
 ├── app.py                    # Streamlit application entry point
 ├── quantum/                  # Quantum backend (QuTiP)
 │   ├── state.py              # BlochState class
@@ -210,10 +264,10 @@ Bloch_v4/
 
 ## Technical Details
 
-- **Quantum backend**: QuTiP for state representation and gate operations. BlochState wraps a QuTiP Qobj (2x1 ket) and provides methods for probabilities, Bloch vector computation, and gate application.
+- **Quantum backend**: QuTiP for state representation and gate operations. BlochState wraps a QuTiP `Qobj` ($2\times1$ ket) and provides methods for probabilities, Bloch vector computation, and gate application.
 - **3D rendering**: Three.js v0.160.0 (loaded via CDN importmap) embedded in Streamlit via `st.iframe()`. All 3D geometry, animation controls, and CRT scanline overlay are in a single HTML template generated by `visualization/scene.py`.
-- **Animation**: Python computes (x,y,z) Bloch vector frames through fractional gate rotations; Three.js renders them client-side. The speed parameter controls frame rate.
-- **GIF export**: Uses qutip.Bloch (matplotlib) with FuncAnimation and PillowWriter. Generates academic-style GIFs with trajectory arcs, color-coded initial/final states, and smooth interpolation.
+- **Animation**: Python computes $(x,y,z)$ Bloch vector frames through fractional gate rotations; Three.js renders them client-side. The speed parameter controls frame rate.
+- **GIF export**: Uses `qutip.Bloch` (matplotlib) with `FuncAnimation` and `PillowWriter`. Generates academic-style GIFs with trajectory arcs, color-coded initial/final states, and smooth interpolation.
 - **Styling**: CSS custom properties for theming. All component styles live in the base template; `light_overrides` contains only text/background color adjustments. Popover/dialog portals require explicit `[data-baseweb="popover"]` CSS rules.
 
 ---
@@ -235,4 +289,4 @@ All managed via conda (`env/environment.yml`):
 
 ## License
 
-This project is for educational purposes.
+This project is licensed under the MIT License. See [LICENSE](./LICENSE) for details.

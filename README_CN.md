@@ -10,7 +10,7 @@
 - 量子态矢量在门操作下的平滑动画演化
 - 轨迹弧线记录并展示量子态在球面上的演化路径
 - 支持门类型：X, Y, Z（泡利门）、H（阿达马门）、Rx, Ry, Rz（参数化旋转门）
-- 初始态选择：|0>、|1>、|+>，或自定义极坐标 (theta, phi)
+- 初始态选择：$|0\rangle$、$|1\rangle$、$|+\rangle$，或自定义极坐标 $(\theta, \phi)$
 - 多门链模式：配置并执行一系列量子门，显示中间态
 - 实时数据面板：狄拉克符号、测量概率、布洛赫坐标
 - GIF 导出：生成适合演示文稿的动画 GIF
@@ -38,6 +38,60 @@
 
 ---
 
+## 实时动画演示
+
+### 单门动画
+
+应用单个量子门，实时观察态矢量的演化过程。
+
+![单门动画 暗色](./fig/gif/screen/template_single.gif)
+
+![单门动画 亮色](./fig/gif/screen/template_single_light.gif)
+
+### 门链动画
+
+配置一系列量子门，观察完整的演化路径与中间态。
+
+![门链动画 暗色](./fig/gif/screen/template_chain.gif)
+
+![门链动画 亮色](./fig/gif/screen/template_chain_light.gif)
+
+### 操作教程
+
+基础门操作与多门链的逐步操作演示。
+
+![基础教程 1](./fig/gif/screen/tutor_basic_1.gif)
+
+![基础教程 2](./fig/gif/screen/tutor_basic_2.gif)
+
+![门链教程](./fig/gif/screen/tutor_chain_1.gif)
+
+---
+
+## GIF 导出效果
+
+应用支持将布洛赫球演化过程导出为动画 GIF。以下是各类门的导出效果。
+
+### 单门导出
+
+| 门 | GIF 预览 | 说明 |
+|------|-------------|-------------|
+| X | ![X 门](./fig/gif/singlegate/0_X.gif) | 比特翻转：绕 $x$ 轴旋转 $\pi$ |
+| Y | ![Y 门](./fig/gif/singlegate/1_Y.gif) | 比特相位翻转：绕 $y$ 轴旋转 $\pi$ |
+| Z | ![Z 门](./fig/gif/singlegate/2_Z.gif) | 相位翻转：绕 $z$ 轴旋转 $\pi$ |
+| H | ![H 门](./fig/gif/singlegate/3_H.gif) | 阿达马门：绕 $(x+z)/\sqrt{2}$ 轴旋转 $\pi$ |
+| Rx | ![Rx 门](./fig/gif/singlegate/4_Rx(1.97).gif) | 绕 $x$ 轴旋转 $\theta = 1.97$ rad |
+| Ry | ![Ry 门](./fig/gif/singlegate/5_Ry(1.97).gif) | 绕 $y$ 轴旋转 $\theta = 1.97$ rad |
+| Rz | ![Rz 门](./fig/gif/singlegate/6_Rz(1.97).gif) | 绕 $z$ 轴旋转 $\theta = 1.97$ rad |
+
+### 门链导出
+
+| 链 | GIF 预览 | 说明 |
+|-------|-------------|-------------|
+| 多门链 | ![门链](./fig/gif/multigate/bloch_chain.gif) | 用户自定义门序列的复合演化 |
+
+---
+
 ## 快速开始
 
 ### 环境要求
@@ -47,18 +101,19 @@
 
 ### 安装
 
+```bash
+git clone git@github.com:rAoLiK/BlochSphere.git
+cd BlochSphere
+```
+
 **Linux / WSL：**
 ```bash
-git clone https://github.com/<your-username>/Bloch_v4.git
-cd Bloch_v4
 bash env/setup.sh
 conda activate bloch
 ```
 
 **Windows：**
 ```cmd
-git clone https://github.com/<your-username>/Bloch_v4.git
-cd Bloch_v4
 env\setup.bat
 conda activate bloch
 ```
@@ -85,15 +140,13 @@ python -m pytest tests/ -v
 
 「SINGLE GATE」标签页用于逐个应用量子门并观察结果。
 
-1. 从侧边栏选择初始态：|0>、|1>、|+>，或输入自定义极坐标 (theta, phi)。
+1. 从侧边栏选择初始态：$|0\rangle$、$|1\rangle$、$|+\rangle$，或输入自定义极坐标 $(\theta, \phi)$。
 2. 选择量子门：X, Y, Z, H, Rx, Ry, Rz。
 3. 对于旋转门（Rx/Ry/Rz），使用滑块设置旋转角度。
 4. 点击 APPLY 执行门操作。态矢量从初始态动画演化至末态，轨迹弧线绘制在球面上。
 5. 鼠标拖拽旋转 3D 视图，滚轮缩放。球体下方的动画控件控制播放。
 
 侧边栏实时显示当前态的狄拉克符号、测量概率和布洛赫坐标。
-
-![单门演示](./fig/gif/singlegate/0_X.gif)
 
 ### 门链模式
 
@@ -103,8 +156,6 @@ python -m pytest tests/ -v
 2. 点击卡片配置门类型和参数。
 3. 点击「APPLY CHAIN」执行完整序列。动画展示态在各门之间的演化过程，表格显示中间态。
 4. 使用动画速度滑块控制播放速度。
-
-![门链演示](./fig/gif/multigate/bloch_chain.gif)
 
 ### GIF 导出
 
@@ -121,63 +172,66 @@ python -m pytest tests/ -v
 
 任意单量子比特纯态可以表示为：
 
-|psi> = cos(theta/2) |0> + e^(i*phi) sin(theta/2) |1>
+$$|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$$
 
-其中 theta in [0, pi] 为极角，phi in [0, 2*pi) 为方位角。这一参数化将每个量子比特态映射到 R^3 中单位球面上的一个点，即布洛赫球。北极对应 |0>，南极对应 |1>，赤道态是 |0> 和 |1> 的等幅叠加，具有不同的相对相位。
+其中 $\theta \in [0, \pi]$ 为极角，$\phi \in [0, 2\pi)$ 为方位角。这一参数化将每个量子比特态映射到 $\mathbb{R}^3$ 中单位球面上的一个点，即布洛赫球。北极对应 $|0\rangle$，南极对应 $|1\rangle$，赤道态是 $|0\rangle$ 和 $|1\rangle$ 的等幅叠加，具有不同的相对相位。
 
-态 |psi> 对应的布洛赫矢量 (x, y, z) 由泡利矩阵的期望值给出：
+态 $|\psi\rangle$ 对应的布洛赫矢量 $\mathbf{r} = (x, y, z)$ 由泡利矩阵的期望值给出：
 
-x = <sigma_x>,  y = <sigma_y>,  z = <sigma_z>
+$$x = \langle\sigma_x\rangle, \quad y = \langle\sigma_y\rangle, \quad z = \langle\sigma_z\rangle$$
 
-对于纯态，该矢量长度为 1，位于布洛赫球表面。混态（密度矩阵满足 Tr(rho^2) < 1）位于球面内部。
+对于纯态，该矢量长度为 1，位于布洛赫球表面。混态（密度矩阵满足 $\mathrm{Tr}(\rho^2) < 1$）位于球面内部。
 
 ### 量子门即旋转
 
-单量子比特门对应布洛赫矢量的旋转。每个幺正门 U 可以表示为绕某轴 n 旋转角度 theta：
+单量子比特门对应布洛赫矢量的旋转。每个幺正门 $U$ 可以表示为绕某轴 $\hat{n}$ 旋转角度 $\theta$：
 
-U = exp(-i * theta/2 * n . sigma) = cos(theta/2) I - i sin(theta/2) (n . sigma)
+$$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
 
-其中 n 为单位矢量，sigma = (sigma_x, sigma_y, sigma_z) 为泡利矩阵。
+其中 $\hat{n}$ 为单位矢量，$\boldsymbol{\sigma} = (\sigma_x, \sigma_y, \sigma_z)$ 为泡利矩阵。
 
 本应用实现的标准门：
 
 | 门 | 轴 | 角度 | 说明 |
 |------|------|-------|-------------|
-| X | x | pi | 比特翻转：|0> <-> |1> |
-| Y | y | pi | 比特相位翻转 |
-| Z | z | pi | 相位翻转：|1> -> -|1> |
-| H | (x+z)/sqrt(2) | pi | 产生等幅叠加 |
-| Rx(theta) | x | theta | 绕 x 轴任意角度旋转 |
-| Ry(theta) | y | theta | 绕 y 轴任意角度旋转 |
-| Rz(theta) | z | theta | 绕 z 轴任意角度旋转 |
+| X | $\hat{x}$ | $\pi$ | 比特翻转：$\|0\rangle \leftrightarrow \|1\rangle$ |
+| Y | $\hat{y}$ | $\pi$ | 比特相位翻转 |
+| Z | $\hat{z}$ | $\pi$ | 相位翻转：$\|1\rangle \to -\|1\rangle$ |
+| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | 产生等幅叠加 |
+| Rx($\theta$) | $\hat{x}$ | $\theta$ | 绕 $x$ 轴任意角度旋转 |
+| Ry($\theta$) | $\hat{y}$ | $\theta$ | 绕 $y$ 轴任意角度旋转 |
+| Rz($\theta$) | $\hat{z}$ | $\theta$ | 绕 $z$ 轴任意角度旋转 |
 
-阿达马门 H 值得特别说明：它绕 x 与 z 之间倾斜 45 度的轴旋转 pi 角度。将 |0> 映射到 |+> = (|0>+|1>)/sqrt(2)，将 |1> 映射到 |-> = (|0>-|1>)/sqrt(2)。
+阿达马门 H 值得特别说明：它绕 $\hat{x}$ 与 $\hat{z}$ 之间倾斜 $45^\circ$ 的轴旋转 $\pi$ 角度。将 $|0\rangle$ 映射到 $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$，将 $|1\rangle$ 映射到 $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$。
 
 ### 态演化与轨迹
 
-当门 U 作用于态 |psi> 时，布洛赫矢量沿球面上的一段大圆弧旋转。旋转轴为门的轴，角度为门的角度。本应用通过将旋转插值为若干小步来可视化这一过程，产生平滑动画并绘制轨迹弧。
+当门 $U$ 作用于态 $|\psi\rangle$ 时，布洛赫矢量沿球面上的一段大圆弧旋转。旋转轴为门的轴，角度为门的角度。本应用通过将旋转插值为若干小步来可视化这一过程，产生平滑动画并绘制轨迹弧。
 
-对于门链 U_1, U_2, ..., U_n，末态为：
+对于门链 $U_1, U_2, \ldots, U_n$，末态为：
 
-|psi_final> = U_n ... U_2 U_1 |psi_initial>
+$$|\psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,|\psi_{\mathrm{initial}}\rangle$$
 
 轨迹为各段弧的拼接，每个门的终点即为下一个门的起点。
 
 ### 测量与概率
 
-当量子比特处于态 |psi> = alpha|0> + beta|1> 时，在计算基下测量：
+当量子比特处于态 $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$ 时，在计算基下测量：
 
-- 测得 0 的概率：P(0) = |alpha|^2 = cos^2(theta/2)
-- 测得 1 的概率：P(1) = |beta|^2 = sin^2(theta/2)
+$$P(0) = |\alpha|^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = |\beta|^2 = \sin^2\frac{\theta}{2}$$
 
-布洛赫矢量的 z 分量编码了这一信息：z = cos(theta) = P(0) - P(1)。靠近北极（z 接近 1）的态测得 0 的概率高，靠近南极（z 接近 -1）的态测得 1 的概率高。
+布洛赫矢量的 $z$ 分量编码了这一信息：
+
+$$z = \cos\theta = P(0) - P(1)$$
+
+靠近北极（$z \approx 1$）的态测得 0 的概率高；靠近南极（$z \approx -1$）的态测得 1 的概率高。
 
 ---
 
 ## 项目结构
 
 ```
-Bloch_v4/
+BlochSphere/
 ├── app.py                    # Streamlit 主程序入口
 ├── quantum/                  # 量子后端 (QuTiP)
 │   ├── state.py              # BlochState 量子态类
@@ -203,6 +257,7 @@ Bloch_v4/
 │   ├── gif/singlegate/       # 单门 GIF 导出
 │   ├── gif/multigate/        # 门链 GIF 导出
 │   └── gif/screen/           # 屏幕录制
+├── LICENSE                   # MIT 许可证
 └── report/                   # 学术报告
 ```
 
@@ -210,10 +265,10 @@ Bloch_v4/
 
 ## 技术细节
 
-- **量子后端**：QuTiP 负责量子态表示与门操作计算。BlochState 封装 QuTiP Qobj（2x1 ket），提供概率计算、布洛赫矢量提取和门应用方法。
+- **量子后端**：QuTiP 负责量子态表示与门操作计算。BlochState 封装 QuTiP `Qobj`（$2\times1$ ket），提供概率计算、布洛赫矢量提取和门应用方法。
 - **3D 渲染**：Three.js v0.160.0（CDN importmap 加载）通过 `st.iframe()` 嵌入 Streamlit。所有 3D 几何体、动画控件和 CRT 扫描线效果均在 `visualization/scene.py` 生成的单一 HTML 模板中。
-- **动画机制**：Python 通过分步旋转门操作计算 (x,y,z) 帧序列，Three.js 在客户端渲染。速度参数控制帧率。
-- **GIF 导出**：使用 qutip.Bloch（matplotlib）配合 FuncAnimation 和 PillowWriter。生成学术风格 GIF，包含轨迹弧线、颜色编码的初末态和平滑插值。
+- **动画机制**：Python 通过分步旋转门操作计算 $(x,y,z)$ 帧序列，Three.js 在客户端渲染。速度参数控制帧率。
+- **GIF 导出**：使用 `qutip.Bloch`（matplotlib）配合 `FuncAnimation` 和 `PillowWriter`。生成学术风格 GIF，包含轨迹弧线、颜色编码的初末态和平滑插值。
 - **样式系统**：CSS 自定义属性实现主题切换。所有组件样式在基础模板中定义；`light_overrides` 仅包含文字/背景色调整。弹出窗口/对话框 portal 需要显式的 `[data-baseweb="popover"]` CSS 规则。
 
 ---
@@ -235,4 +290,4 @@ Bloch_v4/
 
 ## 许可
 
-本项目仅用于教学目的。
+本项目基于 MIT 许可证开源。详见 [LICENSE](./LICENSE)。
