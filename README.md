@@ -20,21 +20,13 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 ## Screenshots
 
-### Dark Mode — Single Gate
+| Single Gate (Dark) | Gate Chain (Dark) |
+|:---:|:---:|
+| <img src="./fig/ScreenShot.png" width="400"> | <img src="./fig/ScreenShot_chain.png" width="400"> |
 
-![Single Gate - Dark](./fig/ScreenShot.png)
-
-### Light Mode — Single Gate
-
-![Single Gate - Light](./fig/ScreenShot_light.png)
-
-### Dark Mode — Gate Chain
-
-![Gate Chain - Dark](./fig/ScreenShot_chain.png)
-
-### Light Mode — Gate Chain
-
-![Gate Chain - Light](./fig/ScreenShot_chain_light.png)
+| Single Gate (Light) | Gate Chain (Light) |
+|:---:|:---:|
+| <img src="./fig/ScreenShot_light.png" width="400"> | <img src="./fig/ScreenShot_chain_light.png" width="400"> |
 
 ---
 
@@ -44,27 +36,18 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 Apply a single quantum gate and watch the state vector evolve in real time.
 
-![Single Gate Dark](./fig/gif/screen/template_single.gif)
-
-![Single Gate Light](./fig/gif/screen/template_single_light.gif)
+| Dark | Light |
+|:---:|:---:|
+| <img src="./fig/gif/screen/template_single.gif" width="380"> | <img src="./fig/gif/screen/template_single_light.gif" width="380"> |
 
 ### Gate Chain Animation
 
 Configure a sequence of gates and observe the full evolution path with intermediate states.
 
-![Gate Chain Dark](./fig/gif/screen/template_chain.gif)
+| Dark | Light |
+|:---:|:---:|
+| <img src="./fig/gif/screen/template_chain.gif" width="380"> | <img src="./fig/gif/screen/template_chain_light.gif" width="380"> |
 
-![Gate Chain Light](./fig/gif/screen/template_chain_light.gif)
-
-### Operation Tutorial
-
-Step-by-step walkthrough of basic gate operations and multi-gate chains.
-
-![Basic Tutorial 1](./fig/gif/screen/tutor_basic_1.gif)
-
-![Basic Tutorial 2](./fig/gif/screen/tutor_basic_2.gif)
-
-![Chain Tutorial](./fig/gif/screen/tutor_chain_1.gif)
 
 ---
 
@@ -74,21 +57,21 @@ The application can export animated GIFs of the Bloch sphere evolution. Below ar
 
 ### Single Gate Exports
 
-| Gate | GIF Preview | Description |
-|------|-------------|-------------|
-| X | ![X gate](./fig/gif/singlegate/0_X.gif) | Bit flip: rotation about the $x$-axis by $\pi$ |
-| Y | ![Y gate](./fig/gif/singlegate/1_Y.gif) | Bit-phase flip: rotation about the $y$-axis by $\pi$ |
-| Z | ![Z gate](./fig/gif/singlegate/2_Z.gif) | Phase flip: rotation about the $z$-axis by $\pi$ |
-| H | ![H gate](./fig/gif/singlegate/3_H.gif) | Hadamard: rotation about $(x+z)/\sqrt{2}$ by $\pi$ |
-| Rx | ![Rx gate](./fig/gif/singlegate/4_Rx(1.97).gif) | Rotation about $x$-axis by $\theta = 1.97$ rad |
-| Ry | ![Ry gate](./fig/gif/singlegate/5_Ry(1.97).gif) | Rotation about $y$-axis by $\theta = 1.97$ rad |
-| Rz | ![Rz gate](./fig/gif/singlegate/6_Rz(1.97).gif) | Rotation about $z$-axis by $\theta = 1.97$ rad |
+| Gate | Description | GIF Preview |
+|------|-------------|:---:|
+| X | Bit flip: rotation about the $x$-axis by $\pi$ | <img src="./fig/gif/singlegate/0_X.gif" width="220"> |
+| Y | Bit-phase flip: rotation about the $y$-axis by $\pi$ | <img src="./fig/gif/singlegate/1_Y.gif" width="220"> |
+| Z | Phase flip: rotation about the $z$-axis by $\pi$ | <img src="./fig/gif/singlegate/2_Z.gif" width="220"> |
+| H | Hadamard: rotation about $(x+z)/\sqrt{2}$ by $\pi$ | <img src="./fig/gif/singlegate/3_H.gif" width="220"> |
+| Rx | Rotation about $x$-axis by $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/4_Rx(1.97).gif" width="220"> |
+| Ry | Rotation about $y$-axis by $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/5_Ry(1.97).gif" width="220"> |
+| Rz | Rotation about $z$-axis by $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/6_Rz(1.97).gif" width="220"> |
 
 ### Gate Chain Export
 
-| Chain | GIF Preview | Description |
-|-------|-------------|-------------|
-| Multi-gate | ![Chain](./fig/gif/multigate/bloch_chain.gif) | Composite evolution through a user-defined gate sequence |
+| Chain | Description | GIF Preview |
+|-------|-------------|:---:|
+| Multi-gate | Composite evolution through a user-defined gate sequence | <img src="./fig/gif/multigate/bloch_chain.gif" width="220"> |
 
 ---
 
@@ -148,6 +131,14 @@ The "SINGLE GATE" tab lets you apply one quantum gate at a time and observe the 
 
 The sidebar displays the current state in Dirac notation, measurement probabilities, and Bloch coordinates in real time.
 
+Custom initial states can be set via polar coordinates $(\theta, \phi)$, allowing exploration of any point on the Bloch sphere:
+
+<img src="./fig/gif/screen/tutor_basic_2.gif" width="500">
+
+Basic gate operations on the default initial state:
+
+<img src="./fig/gif/screen/tutor_basic_1.gif" width="500">
+
 ### Gate Chain Mode
 
 The "GATE CHAIN" tab lets you configure a sequence of multiple gates and execute them as a single animation.
@@ -156,6 +147,8 @@ The "GATE CHAIN" tab lets you configure a sequence of multiple gates and execute
 2. Configure each gate's type and parameters by clicking on its card.
 3. Click "APPLY CHAIN" to execute the full sequence. The animation shows the state evolving through each gate, with intermediate states displayed in a table.
 4. Use the animation speed slider to control playback speed.
+
+<img src="./fig/gif/screen/tutor_chain_1.gif" width="500">
 
 ### GIF Export
 

@@ -14,27 +14,19 @@
 - 多门链模式：配置并执行一系列量子门，显示中间态
 - 实时数据面板：狄拉克符号、测量概率、布洛赫坐标
 - GIF 导出：生成适合演示文稿的动画 GIF
-- 双主题：暗色（复古未来主义黑橙）和亮色（暖灰）
+- 双主题：暗色和亮色
 
 ---
 
 ## 效果展示
 
-### 暗色模式 — 单门操作
+| 单门操作（暗色） | 门链操作（暗色） |
+|:---:|:---:|
+| <img src="./fig/ScreenShot.png" width="400"> | <img src="./fig/ScreenShot_chain.png" width="400"> |
 
-![单门操作 - 暗色](./fig/ScreenShot.png)
-
-### 亮色模式 — 单门操作
-
-![单门操作 - 亮色](./fig/ScreenShot_light.png)
-
-### 暗色模式 — 门链操作
-
-![门链操作 - 暗色](./fig/ScreenShot_chain.png)
-
-### 亮色模式 — 门链操作
-
-![门链操作 - 亮色](./fig/ScreenShot_chain_light.png)
+| 单门操作（亮色） | 门链操作（亮色） |
+|:---:|:---:|
+| <img src="./fig/ScreenShot_light.png" width="400"> | <img src="./fig/ScreenShot_chain_light.png" width="400"> |
 
 ---
 
@@ -44,27 +36,18 @@
 
 应用单个量子门，实时观察态矢量的演化过程。
 
-![单门动画 暗色](./fig/gif/screen/template_single.gif)
-
-![单门动画 亮色](./fig/gif/screen/template_single_light.gif)
+| 暗色 | 亮色 |
+|:---:|:---:|
+| <img src="./fig/gif/screen/template_single.gif" width="380"> | <img src="./fig/gif/screen/template_single_light.gif" width="380"> |
 
 ### 门链动画
 
 配置一系列量子门，观察完整的演化路径与中间态。
 
-![门链动画 暗色](./fig/gif/screen/template_chain.gif)
+| 暗色 | 亮色 |
+|:---:|:---:|
+| <img src="./fig/gif/screen/template_chain.gif" width="380"> | <img src="./fig/gif/screen/template_chain_light.gif" width="380"> |
 
-![门链动画 亮色](./fig/gif/screen/template_chain_light.gif)
-
-### 操作教程
-
-基础门操作与多门链的逐步操作演示。
-
-![基础教程 1](./fig/gif/screen/tutor_basic_1.gif)
-
-![基础教程 2](./fig/gif/screen/tutor_basic_2.gif)
-
-![门链教程](./fig/gif/screen/tutor_chain_1.gif)
 
 ---
 
@@ -74,21 +57,21 @@
 
 ### 单门导出
 
-| 门 | GIF 预览 | 说明 |
-|------|-------------|-------------|
-| X | ![X 门](./fig/gif/singlegate/0_X.gif) | 比特翻转：绕 $x$ 轴旋转 $\pi$ |
-| Y | ![Y 门](./fig/gif/singlegate/1_Y.gif) | 比特相位翻转：绕 $y$ 轴旋转 $\pi$ |
-| Z | ![Z 门](./fig/gif/singlegate/2_Z.gif) | 相位翻转：绕 $z$ 轴旋转 $\pi$ |
-| H | ![H 门](./fig/gif/singlegate/3_H.gif) | 阿达马门：绕 $(x+z)/\sqrt{2}$ 轴旋转 $\pi$ |
-| Rx | ![Rx 门](./fig/gif/singlegate/4_Rx(1.97).gif) | 绕 $x$ 轴旋转 $\theta = 1.97$ rad |
-| Ry | ![Ry 门](./fig/gif/singlegate/5_Ry(1.97).gif) | 绕 $y$ 轴旋转 $\theta = 1.97$ rad |
-| Rz | ![Rz 门](./fig/gif/singlegate/6_Rz(1.97).gif) | 绕 $z$ 轴旋转 $\theta = 1.97$ rad |
+| 门 | 说明 | GIF 预览 |
+|------|-------------|:---:|
+| X | 比特翻转：绕 $x$ 轴旋转 $\pi$ | <img src="./fig/gif/singlegate/0_X.gif" width="220"> |
+| Y | 比特相位翻转：绕 $y$ 轴旋转 $\pi$ | <img src="./fig/gif/singlegate/1_Y.gif" width="220"> |
+| Z | 相位翻转：绕 $z$ 轴旋转 $\pi$ | <img src="./fig/gif/singlegate/2_Z.gif" width="220"> |
+| H | 阿达马门：绕 $(x+z)/\sqrt{2}$ 轴旋转 $\pi$ | <img src="./fig/gif/singlegate/3_H.gif" width="220"> |
+| Rx | 绕 $x$ 轴旋转 $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/4_Rx(1.97).gif" width="220"> |
+| Ry | 绕 $y$ 轴旋转 $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/5_Ry(1.97).gif" width="220"> |
+| Rz | 绕 $z$ 轴旋转 $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/6_Rz(1.97).gif" width="220"> |
 
 ### 门链导出
 
-| 链 | GIF 预览 | 说明 |
-|-------|-------------|-------------|
-| 多门链 | ![门链](./fig/gif/multigate/bloch_chain.gif) | 用户自定义门序列的复合演化 |
+| 链 | 说明 | GIF 预览 |
+|-------|-------------|:---:|
+| 多门链 | 用户自定义门序列的复合演化 | <img src="./fig/gif/multigate/bloch_chain.gif" width="220"> |
 
 ---
 
@@ -148,6 +131,14 @@ python -m pytest tests/ -v
 
 侧边栏实时显示当前态的狄拉克符号、测量概率和布洛赫坐标。
 
+通过极坐标 $(\theta, \phi)$ 可设置任意初始态，探索布洛赫球面上的任意位置：
+
+<img src="./fig/gif/screen/tutor_basic_2.gif" width="500">
+
+默认初始态下的基础门操作演示：
+
+<img src="./fig/gif/screen/tutor_basic_1.gif" width="500">
+
 ### 门链模式
 
 「GATE CHAIN」标签页用于配置多个量子门序列并作为整体执行。
@@ -156,6 +147,8 @@ python -m pytest tests/ -v
 2. 点击卡片配置门类型和参数。
 3. 点击「APPLY CHAIN」执行完整序列。动画展示态在各门之间的演化过程，表格显示中间态。
 4. 使用动画速度滑块控制播放速度。
+
+<img src="./fig/gif/screen/tutor_chain_1.gif" width="500">
 
 ### GIF 导出
 
@@ -194,9 +187,9 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 | 门 | 轴 | 角度 | 说明 |
 |------|------|-------|-------------|
-| X | $\hat{x}$ | $\pi$ | 比特翻转：$\|0\rangle \leftrightarrow \|1\rangle$ |
+| X | $\hat{x}$ | $\pi$ | 比特翻转：$|0\rangle \leftrightarrow |1\rangle$ |
 | Y | $\hat{y}$ | $\pi$ | 比特相位翻转 |
-| Z | $\hat{z}$ | $\pi$ | 相位翻转：$\|1\rangle \to -\|1\rangle$ |
+| Z | $\hat{z}$ | $\pi$ | 相位翻转：$|1\rangle \to -|1\rangle$ |
 | H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | 产生等幅叠加 |
 | Rx($\theta$) | $\hat{x}$ | $\theta$ | 绕 $x$ 轴任意角度旋转 |
 | Ry($\theta$) | $\hat{y}$ | $\theta$ | 绕 $y$ 轴任意角度旋转 |
