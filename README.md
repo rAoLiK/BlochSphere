@@ -2,6 +2,8 @@
 
 **[English](./README_EN.md)** | **中文**
 
+</div>
+
 # 布洛赫球 — 交互式单量子比特门演化演示
 
 基于布洛赫球的量子态与门操作交互式 3D 可视化工具。技术栈：Streamlit + QuTiP + Three.js。
@@ -23,6 +25,8 @@
 
 ## 效果展示
 
+<div align="center">
+
 | 单门操作（暗色） | 门链操作（暗色） |
 |:---:|:---:|
 | <img src="./fig/ScreenShot.png" width="400"> | <img src="./fig/ScreenShot_chain.png" width="400"> |
@@ -30,6 +34,8 @@
 | 单门操作（亮色） | 门链操作（亮色） |
 |:---:|:---:|
 | <img src="./fig/ScreenShot_light.png" width="400"> | <img src="./fig/ScreenShot_chain_light.png" width="400"> |
+
+</div>
 
 ---
 
@@ -39,17 +45,25 @@
 
 应用单个量子门，实时观察态矢量的演化过程。
 
+<div align="center">
+
 | 暗色 | 亮色 |
 |:---:|:---:|
 | <img src="./fig/gif/screen/template_single.gif" width="380"> | <img src="./fig/gif/screen/template_single_light.gif" width="380"> |
+
+</div>
 
 ### 门链动画
 
 配置一系列量子门，观察完整的演化路径与中间态。
 
+<div align="center">
+
 | 暗色 | 亮色 |
 |:---:|:---:|
 | <img src="./fig/gif/screen/template_chain.gif" width="380"> | <img src="./fig/gif/screen/template_chain_light.gif" width="380"> |
+
+</div>
 
 ---
 
@@ -58,6 +72,8 @@
 应用支持将布洛赫球演化过程导出为动画 GIF。以下是各类门的导出效果。
 
 ### 单门导出
+
+<div align="center">
 
 | 门 | 说明 | GIF 预览 |
 |------|-------------|:---:|
@@ -69,11 +85,17 @@
 | Ry | 绕 $y$ 轴旋转 $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/5_Ry(1.97).gif" width="220"> |
 | Rz | 绕 $z$ 轴旋转 $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/6_Rz(1.97).gif" width="220"> |
 
+</div>
+
 ### 门链导出
+
+<div align="center">
 
 | 链 | 说明 | GIF 预览 |
 |-------|-------------|:---:|
 | 多门链 | 用户自定义门序列的复合演化 | <img src="./fig/gif/multigate/bloch_chain.gif" width="220"> |
+
+</div>
 
 ---
 
@@ -187,6 +209,8 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 本应用实现的标准门及其矩阵表示：
 
+<div align="center">
+
 | 门 | 轴 | 角度 | 矩阵 | 说明 |
 |------|------|-------|------|-------------|
 | X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | 比特翻转：$\|0\rangle \leftrightarrow \|1\rangle$ |
@@ -196,6 +220,8 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 | Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $x$ 轴任意角度旋转 |
 | Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $y$ 轴任意角度旋转 |
 | Rz($\theta$) | $\hat{z}$ | $\theta$ | $\begin{pmatrix}e^{-i\theta/2}&0\\0&e^{i\theta/2}\end{pmatrix}$ | 绕 $z$ 轴任意角度旋转 |
+
+</div>
 
 阿达马门 H 值得特别说明：它绕 $\hat{x}$ 与 $\hat{z}$ 之间倾斜 $45^\circ$ 的轴旋转 $\pi$ 角度。将 $|0\rangle$ 映射到 $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$，将 $|1\rangle$ 映射到 $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$。
 
@@ -286,6 +312,8 @@ BlochSphere/
 
 通过 conda 统一管理（`env/environment.yml`）：
 
+<div align="center">
+
 | 包 | 用途 |
 |---------|---------|
 | Python 3.10 | 运行时 |
@@ -294,6 +322,8 @@ BlochSphere/
 | Matplotlib | GIF 渲染后端 |
 | Pillow | GIF 编码 |
 | Streamlit | Web UI 框架 |
+
+</div>
 
 ---
 

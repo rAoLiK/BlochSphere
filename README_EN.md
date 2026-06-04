@@ -2,6 +2,8 @@
 
 **English** | **[中文](./README.md)**
 
+</div>
+
 # Bloch Sphere — Interactive Single-Qubit Gate Evolution
 
 Interactive 3D visualization of quantum states and gate operations on the Bloch sphere. Built with Streamlit + QuTiP + Three.js.
@@ -23,6 +25,8 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 ## Screenshots
 
+<div align="center">
+
 | Single Gate (Dark) | Gate Chain (Dark) |
 |:---:|:---:|
 | <img src="./fig/ScreenShot.png" width="400"> | <img src="./fig/ScreenShot_chain.png" width="400"> |
@@ -30,6 +34,8 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 | Single Gate (Light) | Gate Chain (Light) |
 |:---:|:---:|
 | <img src="./fig/ScreenShot_light.png" width="400"> | <img src="./fig/ScreenShot_chain_light.png" width="400"> |
+
+</div>
 
 ---
 
@@ -39,17 +45,25 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 Apply a single quantum gate and watch the state vector evolve in real time.
 
+<div align="center">
+
 | Dark | Light |
 |:---:|:---:|
 | <img src="./fig/gif/screen/template_single.gif" width="380"> | <img src="./fig/gif/screen/template_single_light.gif" width="380"> |
+
+</div>
 
 ### Gate Chain Animation
 
 Configure a sequence of gates and observe the full evolution path with intermediate states.
 
+<div align="center">
+
 | Dark | Light |
 |:---:|:---:|
 | <img src="./fig/gif/screen/template_chain.gif" width="380"> | <img src="./fig/gif/screen/template_chain_light.gif" width="380"> |
+
+</div>
 
 ---
 
@@ -58,6 +72,8 @@ Configure a sequence of gates and observe the full evolution path with intermedi
 The application can export animated GIFs of the Bloch sphere evolution. Below are examples of exported GIFs for each gate type.
 
 ### Single Gate Exports
+
+<div align="center">
 
 | Gate | Description | GIF Preview |
 |------|-------------|:---:|
@@ -69,11 +85,17 @@ The application can export animated GIFs of the Bloch sphere evolution. Below ar
 | Ry | Rotation about $y$-axis by $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/5_Ry(1.97).gif" width="220"> |
 | Rz | Rotation about $z$-axis by $\theta = 1.97$ rad | <img src="./fig/gif/singlegate/6_Rz(1.97).gif" width="220"> |
 
+</div>
+
 ### Gate Chain Export
+
+<div align="center">
 
 | Chain | Description | GIF Preview |
 |-------|-------------|:---:|
 | Multi-gate | Composite evolution through a user-defined gate sequence | <img src="./fig/gif/multigate/bloch_chain.gif" width="220"> |
+
+</div>
 
 ---
 
@@ -187,6 +209,8 @@ where $\hat{n}$ is a unit vector and $\boldsymbol{\sigma} = (\sigma_x, \sigma_y,
 
 The standard gates and their matrix representations:
 
+<div align="center">
+
 | Gate | Axis | Angle | Matrix | Description |
 |------|------|-------|--------|-------------|
 | X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | Bit flip: $\|0\rangle \leftrightarrow \|1\rangle$ |
@@ -196,6 +220,8 @@ The standard gates and their matrix representations:
 | Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $x$ |
 | Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $y$ |
 | Rz($\theta$) | $\hat{z}$ | $\theta$ | $\begin{pmatrix}e^{-i\theta/2}&0\\0&e^{i\theta/2}\end{pmatrix}$ | Arbitrary rotation about $z$ |
+
+</div>
 
 The Hadamard gate H deserves special attention: it rotates the state by $\pi$ about an axis tilted $45^\circ$ between $\hat{x}$ and $\hat{z}$. This maps $|0\rangle$ to $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$ and $|1\rangle$ to $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$.
 
@@ -286,6 +312,8 @@ BlochSphere/
 
 All managed via conda (`env/environment.yml`):
 
+<div align="center">
+
 | Package | Purpose |
 |---------|---------|
 | Python 3.10 | Runtime |
@@ -294,6 +322,8 @@ All managed via conda (`env/environment.yml`):
 | Matplotlib | GIF rendering backend |
 | Pillow | GIF encoding |
 | Streamlit | Web UI framework |
+
+</div>
 
 ---
 
