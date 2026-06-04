@@ -203,7 +203,7 @@ $$x = \langle\sigma_x\rangle, \quad y = \langle\sigma_y\rangle, \quad z = \langl
 
 单量子比特门对应布洛赫矢量的旋转。每个幺正门 $U$ 可以表示为绕某轴 $\hat{n}$ 旋转角度 $\theta$：
 
-$$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
+$$U = \exp\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
 
 其中 $\hat{n}$ 为单位矢量， $\boldsymbol{\sigma} = (\sigma_x, \sigma_y, \sigma_z)$ 为泡利矩阵。
 
@@ -230,7 +230,7 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 >
 > 在量子计算文献中，旋转门存在两种常见的角度约定。本工程采用的是现代量子计算框架（如 QuTiP、Qiskit）中通用的标准约定：
 >
-> $$R_n(\theta) = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right)$$
+> $$R_n(\theta) = \exp\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right)$$
 >
 > 在此约定下，参数 $\theta$ 即为布洛赫矢量在球面上的实际旋转角度。例如，设置 $\theta = \pi$ 时，布洛赫矢量恰好旋转 $\pi$，对应从北极到南极的翻转。
 >
