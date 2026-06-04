@@ -213,13 +213,13 @@ The standard gates and their matrix representations:
 
 | Gate | Axis | Angle | Matrix | Description |
 |------|------|-------|--------|-------------|
-| X | $\hat{x}$ | $\pi$ | $\pmatrix{0&1\\1&0}$ | Bit flip: $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
-| Y | $\hat{y}$ | $\pi$ | $\pmatrix{0&-i\\i&0}$ | Bit-phase flip |
-| Z | $\hat{z}$ | $\pi$ | $\pmatrix{1&0\\0&-1}$ | Phase flip: $\vert 1\rangle \to -\vert 1\rangle$ |
-| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\pmatrix{1&1\\1&-1}$ | Creates equal superposition |
-| Rx | $\hat{x}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $x$ |
-| Ry | $\hat{y}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $y$ |
-| Rz | $\hat{z}$ | $\theta$ | $\pmatrix{e^{-i\theta/2}&0\\0&e^{i\theta/2}}$ | Arbitrary rotation about $z$ |
+| X | $\hat{x}$ | $\pi$ | $\pmatrix{0&1\\\ 1&0}$ | Bit flip: $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
+| Y | $\hat{y}$ | $\pi$ | $\pmatrix{0&-i\\\ i&0}$ | Bit-phase flip |
+| Z | $\hat{z}$ | $\pi$ | $\pmatrix{1&0\\\ 0&-1}$ | Phase flip: $\vert 1\rangle \to -\vert 1\rangle$ |
+| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\pmatrix{1&1\\\ 1&-1}$ | Creates equal superposition |
+| Rx | $\hat{x}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\\ -i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $x$ |
+| Ry | $\hat{y}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\ \sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $y$ |
+| Rz | $\hat{z}$ | $\theta$ | $\pmatrix{e^{-i\theta/2}&0\\\ 0&e^{i\theta/2}}$ | Arbitrary rotation about $z$ |
 
 </div>
 
