@@ -87,6 +87,9 @@ with st.sidebar.expander("REFERENCE"):
         * |0&rang; &mdash; North pole (+Z)
         * |1&rang; &mdash; South pole (-Z)
         * |+&rang; &mdash; Equator at +X
+        * |&minus;&rang; &mdash; Equator at &minus;X
+        * |+i&rang; &mdash; Equator at +Y
+        * |&minus;i&rang; &mdash; Equator at &minus;Y
 
         **Pauli gates** rotate by &pi; around their axis.
         **H** creates equal superposition.

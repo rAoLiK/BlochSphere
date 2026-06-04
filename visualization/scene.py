@@ -290,6 +290,7 @@ const matZ = new THREE.MeshStandardMaterial({{ color: 0x3388ff, emissive: 0x0044
 
 // ── Sphere wireframe ─────────────────────────────────
 const sphereGeo = new THREE.SphereGeometry(1, 64, 48);
+sphereGeo.rotateX(-Math.PI / 2);  // align poles with Z (physics convention)
 const wireGeo = new THREE.EdgesGeometry(sphereGeo);
 scene.add(new THREE.LineSegments(wireGeo,
     new THREE.LineBasicMaterial({{ color: palette.wire, transparent: true, opacity: palette.wireOp }})));

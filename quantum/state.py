@@ -35,6 +35,12 @@ class BlochState:
             self.ket = basis(2, 1)
         elif label == "|+⟩":
             self.ket = (basis(2, 0) + basis(2, 1)).unit()
+        elif label == "|−⟩":
+            self.ket = (basis(2, 0) - basis(2, 1)).unit()
+        elif label == "|+i⟩":
+            self.ket = (basis(2, 0) + 1j * basis(2, 1)).unit()
+        elif label == "|−i⟩":
+            self.ket = (basis(2, 0) - 1j * basis(2, 1)).unit()
         else:
             raise ValueError(f"Unknown initial state label: {label}")
 
@@ -53,35 +59,37 @@ class BlochState:
         return (float(abs(alpha) ** 2), float(abs(beta) ** 2))
 
     def to_ket_text(self) -> str:
-        """Formatted Dirac notation string with global phase factored out."""
+        """Formatted Dirac notation — displays the raw amplitudes as-is."""
         alpha = complex(self.ket[0, 0])
         beta = complex(self.ket[1, 0])
-        # Factor out global phase: if alpha is the dominant component,
-        # make alpha real; otherwise make beta real
-        if abs(alpha) > abs(beta):
-            g_phase = np.angle(alpha)
-        else:
-            g_phase = np.angle(beta)
-        alpha = alpha * np.exp(-1j * g_phase)
-        beta = beta * np.exp(-1j * g_phase)
-        a_mag = abs(alpha)
-        b_mag, b_phase = abs(beta), np.angle(beta)
 
         parts = []
         threshold = 1e-10
 
-        if a_mag > threshold:
-            parts.append(f"{a_mag:.3f}|0⟩")
+        if abs(alpha) > threshold:
+            parts.append(self._format_amp(alpha, "|0⟩"))
 
-        if b_mag > threshold:
-            b_str = f"{b_mag:.3f}"
-            if abs(b_phase) > threshold:
-                b_str += f"e^{{i{b_phase:.2f}}}"
-            parts.append(f"{b_str}|1⟩")
+        if abs(beta) > threshold:
+            parts.append(self._format_amp(beta, "|1⟩"))
 
         if not parts:
             return "0"
         return " + ".join(parts).replace("+ -", "- ")
+
+    @staticmethod
+    def _format_amp(z: complex, ket: str) -> str:
+        """Format a complex amplitude with its ket label."""
+        mag = abs(z)
+        phase = np.angle(z)
+        if abs(phase) < 1e-10:
+            return f"{mag:.3f}{ket}"
+        if abs(phase - np.pi) < 1e-10 or abs(phase + np.pi) < 1e-10:
+            return f"-{mag:.3f}{ket}"
+        if abs(phase - np.pi / 2) < 1e-10:
+            return f"i{mag:.3f}{ket}"
+        if abs(phase + np.pi / 2) < 1e-10:
+            return f"-i{mag:.3f}{ket}"
+        return f"{mag:.3f}e^{{i{phase:.2f}}}{ket}"
 
     def apply_gate(self, gate_matrix: Qobj) -> "BlochState":
         """Apply a unitary gate and return a new BlochState."""

@@ -4,6 +4,12 @@ from qutip import Qobj, sigmax, sigmay, sigmaz, identity
 
 def _rotation_gate(axis: tuple[float, float, float], theta: float,
                    label: str, matrix_tex: str) -> dict:
+    """Build a gate dict via R_n(θ) = cos(θ/2)·I − i·sin(θ/2)·(n·σ).
+
+    Used for parametric rotation gates (Rx, Ry, Rz).  Fixed gates
+    (X, Y, Z, H) use :func:`_textbook_gate` instead to avoid an
+    extraneous global phase factor of −i.
+    """
     nx, ny, nz = axis
     I = identity(2)
     matrix = np.cos(theta / 2) * I - 1j * np.sin(theta / 2) * (
@@ -17,22 +23,37 @@ def _rotation_gate(axis: tuple[float, float, float], theta: float,
     }
 
 
+def _textbook_gate(matrix, axis: tuple[float, float, float], angle: float,
+                   label: str, matrix_tex: str) -> dict:
+    """Build a gate dict from a literal (textbook) unitary matrix."""
+    return {
+        "matrix": Qobj(matrix),
+        "axis": axis,
+        "angle": angle,
+        "label": label,
+        "matrix_tex": matrix_tex,
+    }
+
+
 def gate_x() -> dict:
-    return _rotation_gate(
+    return _textbook_gate(
+        [[0, 1], [1, 0]],
         (1, 0, 0), np.pi, "X",
         r"X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}"
     )
 
 
 def gate_y() -> dict:
-    return _rotation_gate(
+    return _textbook_gate(
+        [[0, -1j], [1j, 0]],
         (0, 1, 0), np.pi, "Y",
         r"Y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}"
     )
 
 
 def gate_z() -> dict:
-    return _rotation_gate(
+    return _textbook_gate(
+        [[1, 0], [0, -1]],
         (0, 0, 1), np.pi, "Z",
         r"Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}"
     )
@@ -40,7 +61,8 @@ def gate_z() -> dict:
 
 def gate_h() -> dict:
     n = 1 / np.sqrt(2)
-    return _rotation_gate(
+    return _textbook_gate(
+        n * np.array([[1, 1], [1, -1]]),
         (n, 0, n), np.pi, "H",
         r"H = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}"
     )

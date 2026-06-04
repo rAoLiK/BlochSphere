@@ -5,7 +5,7 @@ import streamlit as st
 import numpy as np
 
 
-INITIAL_STATES = ["|0⟩", "|1⟩", "|+⟩", "Custom"]
+INITIAL_STATES = ["|0⟩", "|1⟩", "|+⟩", "|−⟩", "|+i⟩", "|−i⟩", "Custom"]
 GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 THEMES = {"Dark": "dark", "Light": "light"}
 MAX_GATES_PER_ROW = 6

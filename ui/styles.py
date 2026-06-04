@@ -198,8 +198,28 @@ def _build_theme_css(theme: str) -> str:
 }
 
 /* Expander text */
-.stExpander summary {
+.stExpander summary,
+.stExpander summary *,
+.stExpander summary h1,
+.stExpander summary h2,
+.stExpander summary h3,
+.stExpander summary h4,
+.stExpander summary h5,
+.stExpander summary p,
+.stExpander summary span,
+.stExpander summary div,
+.stExpander[open] summary,
+.stExpander[open] summary *,
+.stExpander[open] summary h1,
+.stExpander[open] summary h2,
+.stExpander[open] summary h3,
+.stExpander[open] summary h4,
+.stExpander[open] summary h5,
+.stExpander[open] summary p,
+.stExpander[open] summary span,
+.stExpander[open] summary div {
     color: var(--accent) !important;
+    background-color: transparent !important;
 }
 .stExpander [data-testid="stExpanderDetails"],
 .stExpander [data-testid="stExpanderDetails"] p,
@@ -787,7 +807,8 @@ h5 {{
     border-radius: var(--radius-md) !important;
     margin-top: 0.3rem !important;
 }}
-.stExpander summary {{
+.stExpander summary,
+.stExpander[open] summary {{
     color: var(--accent-hover) !important;
     font-family: var(--font-mono) !important;
     font-size: var(--text-sm) !important;
