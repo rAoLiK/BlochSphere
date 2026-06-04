@@ -7,7 +7,7 @@ import streamlit as st
 import numpy as np
 
 from quantum import BlochState, get_gate, generate_frames, generate_chain_frames
-from ui import inject_styles, render_controls, render_chain_controls
+from ui import inject_styles, render_controls, render_chain_controls, render_chain_evolution
 from ui.display import render_state_display, render_gate_matrix
 from visualization import build_scene_html
 
@@ -19,7 +19,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-inject_styles()
+# Theme is set by the sidebar radio; read from session_state (default: dark)
+_current_theme = st.session_state.get("theme_selector", "Dark")
+_theme = "light" if _current_theme == "Light" else "dark"
+inject_styles(_theme)
 
 # ── Session state init ──────────────────────────────────────────────
 if "bloch_state" not in st.session_state:
@@ -56,13 +59,16 @@ if "chain_final_state" not in st.session_state:
     st.session_state.chain_final_state = None
 if "chain_trigger" not in st.session_state:
     st.session_state.chain_trigger = 0
+if "chain_gates" not in st.session_state:
+    st.session_state.chain_gates = [
+        {"type": "X", "theta": 0.0, "id": "gate_0"},
+    ]
 
 
 # ── Header ──────────────────────────────────────────────────────────
 st.markdown(
     "<h1 style='margin-bottom:0;'>BLOCH SPHERE</h1>"
-    "<p style='color:#666;font-size:0.78rem;letter-spacing:2px;margin-top:2px;"
-    "margin-bottom:0.5rem;'>"
+    "<p class='header-sub'>"
     "SINGLE-QUBIT GATE EVOLUTION &mdash; INTERACTIVE 3D VISUALIZATION"
     "</p>",
     unsafe_allow_html=True,
@@ -180,7 +186,7 @@ tab_single, tab_chain = st.tabs(["SINGLE GATE", "GATE CHAIN"])
 
 # ── Single Gate Tab ─────────────────────────────────────────────────
 with tab_single:
-    col_left, col_right = st.columns([0.38, 0.62])
+    col_left, col_right = st.columns([0.32, 0.68])
 
     with col_right:
         state = st.session_state.bloch_state
@@ -196,6 +202,7 @@ with tab_single:
             "prob1": state.probabilities()[1],
             "state_text": state.to_ket_text(),
             "speed": controls["speed"],
+            "theme": _theme,
             "chain_frames": [],
             "chain_boundaries": [],
             "chain_labels": [],
@@ -204,7 +211,7 @@ with tab_single:
 
         scene_html = build_scene_html(scene_data)
         scene_html += f"\n<!-- t:{st.session_state.anim_trigger}_0 -->\n"
-        st.iframe(scene_html, height=560)
+        st.iframe(scene_html, height=720)
 
     with col_left:
         state = st.session_state.bloch_state
@@ -251,6 +258,59 @@ with tab_single:
 
 # ── Gate Chain Tab ──────────────────────────────────────────────────
 with tab_chain:
+    # ── Two-column layout: left info + right 3D scene ────
+    col_left, col_right = st.columns([0.4, 0.6])
+
+    with col_right:
+        state = st.session_state.bloch_state
+        x, y, z = state.bloch_vector()
+
+        has_chain = bool(st.session_state.chain_frames)
+        scene_data = {
+            "bloch_vector": [x, y, z],
+            "frames": [],
+            "axis": [0, 0, 0],
+            "angle": 0,
+            "gate_label": "-",
+            "prob0": state.probabilities()[0],
+            "prob1": state.probabilities()[1],
+            "state_text": state.to_ket_text(),
+            "speed": controls["speed"],
+            "theme": _theme,
+            "chain_frames": st.session_state.chain_frames if has_chain else [],
+            "chain_boundaries": st.session_state.chain_boundaries if has_chain else [],
+            "chain_labels": st.session_state.chain_labels if has_chain else [],
+            "chain_details": st.session_state.chain_details if has_chain else [],
+        }
+        scene_html = build_scene_html(scene_data)
+        scene_html += f"\n<!-- tc:{st.session_state.chain_trigger} -->\n"
+        st.iframe(scene_html, height=620)
+
+    with col_left:
+        # Show final state if chain applied, otherwise show initial state
+        if st.session_state.chain_final_state:
+            final = st.session_state.chain_final_state
+            render_state_display(
+                state_text=final.to_ket_text(),
+                prob0=final.probabilities()[0],
+                prob1=final.probabilities()[1],
+                gate_label="CHAIN",
+                gate_angle=0.0,
+                bloch_vector=final.bloch_vector(),
+            )
+        else:
+            render_state_display(
+                state_text=state.to_ket_text(),
+                prob0=state.probabilities()[0],
+                prob1=state.probabilities()[1],
+                gate_label="-",
+                gate_angle=0.0,
+                bloch_vector=state.bloch_vector(),
+            )
+
+        render_chain_evolution()
+
+    # ── Chain controls — full width at bottom ───────────
     chain_controls = render_chain_controls()
 
     if chain_controls["apply_clicked"] and not controls["apply_clicked"] and len(chain_controls["chain_gates"]) > 0:
@@ -274,45 +334,3 @@ with tab_chain:
         st.session_state.chain_final_state = None
         st.session_state.chain_trigger += 1
         st.rerun()
-
-    # Chain 3D scene
-    if st.session_state.chain_frames:
-        state = st.session_state.bloch_state
-        x, y, z = state.bloch_vector()
-        scene_data = {
-            "bloch_vector": [x, y, z],
-            "frames": [],
-            "axis": [0, 0, 0],
-            "angle": 0,
-            "gate_label": "-",
-            "prob0": state.probabilities()[0],
-            "prob1": state.probabilities()[1],
-            "state_text": state.to_ket_text(),
-            "speed": controls["speed"],
-            "chain_frames": st.session_state.chain_frames,
-            "chain_boundaries": st.session_state.chain_boundaries,
-            "chain_labels": st.session_state.chain_labels,
-            "chain_details": st.session_state.chain_details,
-        }
-        scene_html = build_scene_html(scene_data)
-        scene_html += f"\n<!-- tc:{st.session_state.chain_trigger} -->\n"
-        st.iframe(scene_html, height=500)
-
-        # Chain final state
-        if st.session_state.chain_final_state:
-            final = st.session_state.chain_final_state
-            fx, fy, fz = final.bloch_vector()
-            fp0, fp1 = final.probabilities()
-            st.markdown(
-                f'<div class="data-bar">'
-                f'<div class="data-item"><div class="data-label">Final State</div>'
-                f'<div class="data-value"><span class="ket">{final.to_ket_text()}</span></div></div>'
-                f'<div class="data-item"><div class="data-label">Bloch</div>'
-                f'<div class="data-value">({fx:.3f}, {fy:.3f}, {fz:.3f})</div></div>'
-                f'<div class="data-item"><div class="data-label">P(|0⟩)</div>'
-                f'<div class="data-value">{fp0*100:.1f}%</div></div>'
-                f'<div class="data-item"><div class="data-label">P(|1⟩)</div>'
-                f'<div class="data-value">{fp1*100:.1f}%</div></div>'
-                f'</div>',
-                unsafe_allow_html=True,
-            )

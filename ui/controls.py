@@ -1,20 +1,34 @@
 """Sidebar control widgets for Bloch Sphere app."""
 
+import math
 import streamlit as st
 import numpy as np
 
 
 INITIAL_STATES = ["|0⟩", "|1⟩", "|+⟩", "Custom"]
 GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
+THEMES = {"Dark": "dark", "Light": "light"}
+MAX_GATES_PER_ROW = 6
 
 
 def render_controls() -> dict:
     """Render sidebar controls and return selections as a dict.
 
     Returns keys: initial_state, custom_theta, custom_phi, gate, theta,
-                  apply_clicked, reset_clicked, playing, speed
+                  apply_clicked, reset_clicked, playing, speed, theme
     """
     result = {}
+
+    # ── Theme toggle ──────────────────────────────────────
+    st.sidebar.markdown("### THEME")
+    theme_choice = st.sidebar.radio(
+        "Color theme",
+        list(THEMES.keys()),
+        horizontal=True,
+        label_visibility="collapsed",
+        key="theme_selector",
+    )
+    result["theme"] = THEMES[theme_choice]
 
     st.sidebar.markdown("### INITIAL STATE")
     result["initial_state"] = st.sidebar.selectbox(
@@ -47,7 +61,6 @@ def render_controls() -> dict:
         st.sidebar.caption(
             f"θ = {theta_deg:.0f}°  φ = {phi_deg:.0f}°"
         )
-        # Bloch coordinate preview
         t, p = result["custom_theta"], result["custom_phi"]
         bx = np.sin(t) * np.cos(p)
         by = np.sin(t) * np.sin(p)
@@ -65,7 +78,6 @@ def render_controls() -> dict:
         label_visibility="collapsed",
     )
 
-    # Rotation angle slider (only for Rx, Ry, Rz)
     if result["gate"] in ("Rx", "Ry", "Rz"):
         st.sidebar.markdown("### ROTATION ANGLE")
         theta_deg = st.sidebar.slider(
@@ -79,7 +91,7 @@ def render_controls() -> dict:
         result["theta"] = np.radians(theta_deg)
         st.sidebar.caption(f"θ = {theta_deg:.0f}° = {result['theta']:.3f} rad")
     else:
-        result["theta"] = 0.0  # Not used for fixed gates
+        result["theta"] = 0.0
 
     st.sidebar.markdown("### ACTION")
     col1, col2 = st.sidebar.columns(2)
@@ -105,20 +117,6 @@ def render_controls() -> dict:
 CHAIN_GATES = ["X", "Y", "Z", "H", "Rx", "Ry", "Rz"]
 
 
-def _build_chain_html(chain_gates: list[dict]) -> str:
-    """Build horizontal chain flow HTML: |ψ₀⟩ → [G1] → [G2] → ... → |ψf⟩"""
-    parts = ['<span class="chain-node chain-state">|ψ₀⟩</span>']
-    for i, g in enumerate(chain_gates):
-        label = g["type"]
-        if g["type"] in ("Rx", "Ry", "Rz"):
-            label += f'({g["theta"]:.2f})'
-        parts.append('<span class="chain-arrow">→</span>')
-        parts.append(f'<span class="chain-node chain-gate" data-gate="{i}">{label}</span>')
-    parts.append('<span class="chain-arrow">→</span>')
-    parts.append('<span class="chain-node chain-state">|ψf⟩</span>')
-    return '<div class="chain-flow">' + "".join(parts) + '</div>'
-
-
 def _compute_intermediate_states(bloch_state, chain_gates: list[dict]) -> list[dict]:
     """Compute quantum state after each gate in the chain."""
     from quantum import BlochState, get_gate
@@ -133,108 +131,16 @@ def _compute_intermediate_states(bloch_state, chain_gates: list[dict]) -> list[d
     return states
 
 
-@st.dialog("GATE CONFIGURATION")
-def _gate_config_dialog(gate_idx: int):
-    """Popup dialog for configuring a single gate in the chain."""
-    cfg = st.session_state.chain_gates[gate_idx]
-    st.markdown(f"**GATE {gate_idx + 1}**")
-
-    new_type = st.radio(
-        "Type", CHAIN_GATES, index=CHAIN_GATES.index(cfg["type"]),
-        horizontal=True, key=f"dlg_gate_type_{gate_idx}",
-    )
-    new_theta = cfg["theta"]
-    if new_type in ("Rx", "Ry", "Rz"):
-        angle_deg = st.slider(
-            "Angle (°)", 0.0, 360.0,
-            value=float(np.degrees(cfg["theta"])), step=1.0,
-            key=f"dlg_gate_angle_{gate_idx}",
-        )
-        new_theta = np.radians(angle_deg)
-
-    if st.button("CONFIRM", use_container_width=True, key=f"dlg_confirm_{gate_idx}"):
-        st.session_state.chain_gates[gate_idx]["type"] = new_type
-        st.session_state.chain_gates[gate_idx]["theta"] = new_theta
-        st.rerun()
+def _gate_label(g: dict) -> str:
+    """Short display label for a gate dict."""
+    lbl = g["type"]
+    if g["type"] in ("Rx", "Ry", "Rz"):
+        lbl += f'({g["theta"]:.2f})'
+    return lbl
 
 
-def render_chain_controls() -> dict:
-    """Render multi-gate chain controls below the main layout.
-
-    Returns dict with keys: chain_gates, apply_clicked, reset_clicked
-    """
-    if "chain_gates" not in st.session_state:
-        st.session_state.chain_gates = [
-            {"type": "X", "theta": 0.0, "id": "gate_0"},
-        ]
-
-    st.markdown("### GATE CHAIN")
-
-    # ── Horizontal chain flow ─────────────────────────
-    chain_html = _build_chain_html(st.session_state.chain_gates)
-    st.markdown(chain_html, unsafe_allow_html=True)
-
-    # ── Gate selector (pill buttons) ──────────────────
-    gate_labels = []
-    for i, g in enumerate(st.session_state.chain_gates):
-        lbl = g["type"]
-        if g["type"] in ("Rx", "Ry", "Rz"):
-            lbl += f'({g["theta"]:.2f})'
-        gate_labels.append(f"{i+1}. {lbl}")
-
-    selected = st.radio(
-        "Select gate to configure", gate_labels,
-        horizontal=True, label_visibility="collapsed",
-        key="chain_gate_selector",
-    )
-    sel_idx = gate_labels.index(selected)
-
-    # ── Selected gate config (opens dialog) ───────────
-    cfg = st.session_state.chain_gates[sel_idx]
-    cfg_label = cfg["type"]
-    if cfg["type"] in ("Rx", "Ry", "Rz"):
-        cfg_label += f'({cfg["theta"]:.2f} rad)'
-
-    col_cfg, col_del = st.columns([3, 1])
-    with col_cfg:
-        st.markdown(
-            f'<div class="gate-sel-info">GATE {sel_idx+1}: '
-            f'<span class="gate-sel-label">{cfg_label}</span></div>',
-            unsafe_allow_html=True,
-        )
-    with col_del:
-        if len(st.session_state.chain_gates) > 1:
-            if st.button("REMOVE", key="chain_remove_sel",
-                         use_container_width=True):
-                st.session_state.chain_gates.pop(sel_idx)
-                st.rerun()
-
-    if st.button("CONFIGURE GATE", use_container_width=True,
-                 key="chain_open_config"):
-        _gate_config_dialog(sel_idx)
-
-    # ── Action buttons ────────────────────────────────
-    col_add, col_apply, col_reset = st.columns(3)
-    with col_add:
-        if st.button("+ ADD GATE", use_container_width=True,
-                      key="chain_add_gate"):
-            new_id = f"gate_{len(st.session_state.chain_gates)}"
-            st.session_state.chain_gates.append(
-                {"type": "X", "theta": 0.0, "id": new_id}
-            )
-            st.rerun()
-    with col_apply:
-        apply_clicked = st.button("APPLY CHAIN", use_container_width=True,
-                                  key="chain_apply")
-    with col_reset:
-        reset_clicked = st.button("RESET CHAIN", use_container_width=True,
-                                  key="chain_reset")
-        if reset_clicked:
-            st.session_state.chain_gates = [
-                {"type": "X", "theta": 0.0, "id": "gate_0"},
-            ]
-
-    # ── Intermediate states (compact scrollable) ──────
+def render_chain_evolution():
+    """Render the state evolution table for the current chain configuration."""
     from quantum import BlochState
     init_label = st.session_state.get("initial_state_label", "|0⟩")
     if init_label == "Custom":
@@ -270,6 +176,110 @@ def render_chain_controls() -> dict:
         f'<div class="istate-container">{"".join(rows)}</div>',
         unsafe_allow_html=True,
     )
+
+
+def render_chain_controls() -> dict:
+    """Render multi-gate chain controls below the main layout.
+
+    Grid layout: max 6 gates per row, wraps automatically.
+    Each gate is a popover — click to configure type/angle inline.
+    Returns dict with keys: chain_gates, apply_clicked, reset_clicked
+    """
+    # ── Process deferred remove (from popover) ────────
+    remove_id = st.session_state.pop("_chain_remove_id", None)
+    if remove_id is not None:
+        st.session_state.chain_gates = [
+            g for g in st.session_state.chain_gates if g["id"] != remove_id
+        ]
+
+    st.markdown("### GATE CHAIN")
+
+    gates = st.session_state.chain_gates
+    n = len(gates)
+    M = MAX_GATES_PER_ROW
+    num_rows = math.ceil(n / M) if n > 0 else 1
+
+    # ── Grid chain flow: max M gates per row ───────────
+    for row in range(num_rows):
+        row_start = row * M
+        row_end = min(row_start + M, n)
+        row_gates = gates[row_start:row_end]
+        is_first = (row == 0)
+        is_last = (row == num_rows - 1)
+
+        col_spec = [0.5] + [1] * len(row_gates) + [0.5]
+        cols = st.columns(col_spec)
+
+        # Start element
+        with cols[0]:
+            if is_first:
+                st.button("|ψ₀⟩", disabled=True, use_container_width=True,
+                          key=f"chain_start_{row}")
+            else:
+                st.button("↓", disabled=True, use_container_width=True,
+                          key=f"chain_down_start_{row}")
+
+        # Gate popovers
+        for j, g in enumerate(row_gates):
+            with cols[1 + j]:
+                label = _gate_label(g)
+                with st.popover(f"**{label}**", use_container_width=True, type="primary"):
+                    new_type = st.radio(
+                        "Type", CHAIN_GATES,
+                        index=CHAIN_GATES.index(g["type"]),
+                        horizontal=True,
+                        key=f"pop_type_{g['id']}",
+                    )
+                    new_theta = g["theta"]
+                    if new_type in ("Rx", "Ry", "Rz"):
+                        angle_deg = st.slider(
+                            "Angle (°)", 0.0, 360.0,
+                            value=float(np.degrees(g["theta"])),
+                            step=1.0,
+                            key=f"pop_angle_{g['id']}",
+                        )
+                        new_theta = np.radians(angle_deg)
+                    changed = (new_type != g["type"] or
+                               abs(new_theta - g["theta"]) > 1e-6)
+                    if changed:
+                        g["type"] = new_type
+                        g["theta"] = new_theta
+                        st.rerun()
+                    if n > 1:
+                        if st.button("REMOVE", key=f"pop_rm_{g['id']}",
+                                     use_container_width=True):
+                            st.session_state["_chain_remove_id"] = g["id"]
+                            st.rerun()
+
+        # End element
+        with cols[-1]:
+            if is_last:
+                st.button("|ψf⟩", disabled=True, use_container_width=True,
+                          key=f"chain_end_{row}")
+            else:
+                st.button("↓", disabled=True, use_container_width=True,
+                          key=f"chain_down_end_{row}")
+
+    # ── Action buttons ────────────────────────────────
+    col_add, col_apply, col_reset = st.columns(3)
+    with col_add:
+        if st.button("+ ADD GATE", use_container_width=True,
+                      key="chain_add_gate"):
+            new_id = f"gate_{len(st.session_state.chain_gates)}"
+            st.session_state.chain_gates.append(
+                {"type": "X", "theta": 0.0, "id": new_id}
+            )
+            st.rerun()
+    with col_apply:
+        apply_clicked = st.button("APPLY CHAIN", use_container_width=True,
+                                  key="chain_apply")
+    with col_reset:
+        reset_clicked = st.button("RESET CHAIN", use_container_width=True,
+                                  key="chain_reset")
+        if reset_clicked:
+            st.session_state.chain_gates = [
+                {"type": "X", "theta": 0.0, "id": "gate_0"},
+            ]
 
     return {
         "chain_gates": list(st.session_state.chain_gates),

@@ -13,25 +13,25 @@ def render_state_display(state_text: str, prob0: float, prob1: float,
 
     st.markdown("### STATE INFORMATION")
 
-    # Data bar
+    # Data bar — vertical layout
     st.markdown(
         f"""
-        <div class="data-bar">
+        <div class="data-bar data-bar-vertical">
             <div class="data-item">
-                <div class="data-label">Quantum State</div>
-                <div class="data-value"><span class="ket">{state_text}</span></div>
+                <span class="data-label">State</span>
+                <span class="data-value"><span class="ket">{state_text}</span></span>
             </div>
             <div class="data-item">
-                <div class="data-label">Gate Applied</div>
-                <div class="data-value">{gate_label}</div>
+                <span class="data-label">Gate</span>
+                <span class="data-value">{gate_label}</span>
             </div>
             <div class="data-item">
-                <div class="data-label">Bloch Vector</div>
-                <div class="data-value">({x:.4f}, {y:.4f}, {z:.4f})</div>
+                <span class="data-label">Bloch</span>
+                <span class="data-value">({x:.3f}, {y:.3f}, {z:.3f})</span>
             </div>
             <div class="data-item">
-                <div class="data-label">Vector Norm</div>
-                <div class="data-value">{np.sqrt(x**2 + y**2 + z**2):.4f}</div>
+                <span class="data-label">Norm</span>
+                <span class="data-value">{np.sqrt(x**2 + y**2 + z**2):.3f}</span>
             </div>
         </div>
         """,

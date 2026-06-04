@@ -2,7 +2,10 @@ import json
 
 
 def build_scene_html(data: dict) -> str:
-    """Build a complete HTML string with an embedded Three.js Bloch sphere scene."""
+    """Build a complete HTML string with an embedded Three.js Bloch sphere scene.
+
+    Supports ``data["theme"]`` ("dark" or "light") to adapt colors.
+    """
     data_json = json.dumps(data)
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -11,9 +14,8 @@ def build_scene_html(data: dict) -> str:
 <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{
-        background: #0a0a0a;
         overflow: hidden;
-        font-family: 'JetBrains Mono', 'Courier New', monospace;
+        font-family: 'Inter', 'JetBrains Mono', 'Courier New', monospace;
     }}
     #container {{ width: 100%; height: 100vh; position: relative; }}
     canvas {{ display: block; }}
@@ -21,55 +23,56 @@ def build_scene_html(data: dict) -> str:
     #container::after {{
         content: '';
         position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        background: repeating-linear-gradient(
-            rgba(0,0,0,0.12) 0px,
-            transparent 2px,
-            transparent 4px
-        );
         pointer-events: none; z-index: 10;
     }}
 
     #controls {{
         position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
         display: flex; gap: 10px; z-index: 20;
-        background: rgba(10,10,10,0.94); padding: 8px 16px;
-        border: 2px solid #ff6b00;
+        padding: 8px 18px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 8px;
     }}
     #controls button {{
-        background: #0a0a0a; color: #ff6b00;
-        border: 2px solid #ff6b00; padding: 6px 14px;
-        font-family: inherit; font-size: 12px; cursor: pointer;
+        padding: 6px 14px;
+        font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
         text-transform: uppercase; letter-spacing: 1px;
         min-width: 60px;
+        border-radius: 6px;
+        transition: all 0.18s ease;
     }}
-    #controls button:hover {{ background: #ff6b00; color: #0a0a0a; }}
-    #controls button.active {{ background: #ff6b00; color: #0a0a0a; }}
+    #controls button:hover {{ transform: translateY(-1px); }}
+    #controls button:active {{ transform: translateY(0); }}
 
     #speed-label {{
-        color: #ff8c00; font-size: 10px; align-self: center; letter-spacing: 1px;
-        min-width: 70px; text-align: center;
+        font-size: 10px; align-self: center; letter-spacing: 1px;
+        min-width: 70px; text-align: center; font-weight: 600;
     }}
     #speed-slider {{
         -webkit-appearance: none; appearance: none;
-        background: #1a1a1a; border: 2px solid #ff6b00;
         height: 5px; width: 80px; align-self: center; cursor: pointer;
+        border-radius: 3px;
     }}
     #speed-slider::-webkit-slider-thumb {{
         -webkit-appearance: none; width: 12px; height: 12px;
-        background: #ff6b00; border: none;
+        border: none; border-radius: 50%;
     }}
     #speed-slider::-moz-range-thumb {{
-        width: 12px; height: 12px; background: #ff6b00; border: none; border-radius: 0;
+        width: 12px; height: 12px; border: none; border-radius: 50%;
     }}
 
     #info {{
-        position: absolute; top: 12px; left: 12px; z-index: 20;
-        color: #ff8c00; font-size: 11px; letter-spacing: 1px;
-        background: rgba(10,10,10,0.88); padding: 8px 14px;
-        border-left: 3px solid #ff6b00;
+        position: absolute; top: 10px; left: 10px; z-index: 20;
+        font-size: 10px; letter-spacing: 1px;
+        padding: 5px 10px;
+        border-left: 2px solid;
+        border-radius: 4px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        line-height: 1.5;
     }}
-    #info .label {{ color: #777; }}
-    #info .value {{ color: #ffaa00; }}
+    #info .label {{ font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 1.5px; }}
 </style>
 </head>
 <body>
@@ -101,12 +104,151 @@ import * as THREE from 'three';
 import {{ OrbitControls }} from 'three/addons/controls/OrbitControls.js';
 
 const DATA = {data_json};
+const THEME = DATA.theme || 'dark';
+
+// ── Theme palettes ────────────────────────────────────
+const palette = THEME === 'light'
+    ? {{
+        bg:         0xe8e3de,
+        fog:        0xe8e3de,
+        wire:       0xc0b8b0,
+        wireOp:     0.40,
+        ring1:      0xbab2aa,
+        ring2:      0xc2bab2,
+        ring3:      0xc6beb6,
+        ringOp1:    0.30,
+        ringOp2:    0.22,
+        ambient:    0xe8e0d8,
+        ambInt:     1.0,
+        pl1Col:     0xc46860,
+        pl1Int:     18,
+        pl2Col:     0xa0403a,
+        pl2Int:     8,
+        glow:       0xa0403a,
+        glowEmit:   0x8a3630,
+        glowEmitI:  0.9,
+        axisHL:     0xa0403a,
+        axisHLEmit: 0x8a3630,
+        dashCol:    0xb54a44,
+        spineCol:   0xc8a8a4,
+        spineOp:    0.35,
+        dashOp:     0.85,
+        coneEmit:   0x8a3630,
+        trajCol:    0xa0403a,
+        trajEmit:   0x8a3630,
+        trajEmitI:  0.5,
+        label0:     '#a0403a',
+        label1:     '#a0403a',
+        labelX:     '#cc3333',
+        labelY:     '#33aa33',
+        labelZ:     '#3366cc',
+        ctrlsBg:    'rgba(232,227,222,0.88)',
+        ctrlsBorder:'1.5px solid #a0403a',
+        btnBg:      '#eae6e1',
+        btnColor:   '#a0403a',
+        btnBorder:  '1.5px solid #a0403a',
+        btnHoverBg: '#a0403a',
+        btnHoverCol:'#ffffff',
+        spdColor:   '#a0403a',
+        spdTrack:   '#d8d0ca',
+        spdThumb:   '#a0403a',
+        infoBg:     'rgba(232,227,222,0.88)',
+        infoBorder: '#a0403a',
+        infoLabel:  '#8a7c7c',
+        infoValue:  '#a0403a',
+    }}
+    : {{
+        bg:         0x0a0a0a,
+        fog:        0x0a0a0a,
+        wire:       0x332211,
+        wireOp:     0.4,
+        ring1:      0x332211,
+        ring2:      0x332233,
+        ring3:      0x332222,
+        ringOp1:    0.25,
+        ringOp2:    0.18,
+        ambient:    0x332211,
+        ambInt:     1.5,
+        pl1Col:     0xff6b00,
+        pl1Int:     30,
+        pl2Col:     0xff4400,
+        pl2Int:     15,
+        glow:       0xff6b00,
+        glowEmit:   0xff4400,
+        glowEmitI:  1.2,
+        axisHL:     0xffcc00,
+        axisHLEmit: 0xff8800,
+        dashCol:    0xffcc00,
+        spineCol:   0xffaa00,
+        spineOp:    0.3,
+        dashOp:     0.9,
+        coneEmit:   0xff8800,
+        trajCol:    0xff8c00,
+        trajEmit:   0xff4400,
+        trajEmitI:  0.8,
+        label0:     '#ff6b00',
+        label1:     '#ff6b00',
+        labelX:     '#ff3333',
+        labelY:     '#33ff33',
+        labelZ:     '#3388ff',
+        ctrlsBg:    'rgba(10,10,10,0.94)',
+        ctrlsBorder:'2px solid #ff6b00',
+        btnBg:      '#0a0a0a',
+        btnColor:   '#ff6b00',
+        btnBorder:  '2px solid #ff6b00',
+        btnHoverBg: '#ff6b00',
+        btnHoverCol:'#0a0a0a',
+        spdColor:   '#ff8c00',
+        spdTrack:   '#1a1a1a',
+        spdThumb:   '#ff6b00',
+        infoBg:     'rgba(10,10,10,0.88)',
+        infoBorder: '#ff6b00',
+        infoLabel:  '#777777',
+        infoValue:  '#ffaa00',
+    }};
+
+// ── Apply theme to CSS elements ───────────────────────
+(function applyCssTheme() {{
+    const c = document.getElementById('controls');
+    c.style.background = palette.ctrlsBg;
+    c.style.border = palette.ctrlsBorder;
+    c.querySelectorAll('button').forEach(b => {{
+        b.style.background = palette.btnBg;
+        b.style.color = palette.btnColor;
+        b.style.border = palette.btnBorder;
+        b.onmouseenter = () => {{ b.style.background = palette.btnHoverBg; b.style.color = palette.btnHoverCol; }};
+        b.onmouseleave = () => {{ b.style.background = palette.btnBg; b.style.color = palette.btnColor; }};
+    }});
+    document.getElementById('speed-label').style.color = palette.spdColor;
+    const sl = document.getElementById('speed-slider');
+    sl.style.background = palette.spdTrack;
+    // thumb color via CSS custom property trick
+    document.documentElement.style.setProperty('--thumb-color', palette.spdThumb);
+
+    const info = document.getElementById('info');
+    info.style.background = palette.infoBg;
+    info.style.borderColor = palette.infoBorder;
+    info.querySelectorAll('.label').forEach(l => l.style.color = palette.infoLabel);
+    info.querySelectorAll('.value').forEach(v => v.style.color = palette.infoValue);
+    document.body.style.background = '#' + palette.bg.toString(16).padStart(6, '0');
+}})();
+
+// Inject thumb color into stylesheet
+const styleTag = document.createElement('style');
+const scanOp = THEME === 'light' ? '0.03' : '0.12';
+styleTag.textContent =
+    '#speed-slider::-webkit-slider-thumb {{ background: ' + palette.spdThumb + ' !important; }}' +
+    '#speed-slider::-moz-range-thumb {{ background: ' + palette.spdThumb + ' !important; }}' +
+    '#controls button:hover {{ background: ' + palette.btnHoverBg + ' !important; color: ' + palette.btnHoverCol + ' !important; }}' +
+    '#controls button.active {{ background: ' + palette.btnHoverBg + ' !important; color: ' + palette.btnHoverCol + ' !important; }}' +
+    '#container::after {{ background: repeating-linear-gradient(rgba(0,0,0,' + scanOp + ') 0px, transparent 2px, transparent 4px); }}';
+document.head.appendChild(styleTag);
 
 // ── Scene setup ──────────────────────────────────────
 const container = document.getElementById('container');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0a0a);
-scene.fog = new THREE.Fog(0x0a0a0a, 3, 8);
+scene.background = new THREE.Color(palette.bg);
+scene.fog = new THREE.Fog(palette.fog, 3, 8);
 
 const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 20);
 camera.up.set(0, 0, 1);
@@ -119,11 +261,11 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 container.appendChild(renderer.domElement);
 
 // ── Lighting ─────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0x332211, 1.5));
-const pl1 = new THREE.PointLight(0xff6b00, 30, 10);
+scene.add(new THREE.AmbientLight(palette.ambient, palette.ambInt));
+const pl1 = new THREE.PointLight(palette.pl1Col, palette.pl1Int, 10);
 pl1.position.set(3, 3, 3);
 scene.add(pl1);
-const pl2 = new THREE.PointLight(0xff4400, 15, 8);
+const pl2 = new THREE.PointLight(palette.pl2Col, palette.pl2Int, 8);
 pl2.position.set(-3, -2, -3);
 scene.add(pl2);
 
@@ -139,7 +281,7 @@ orbitCtrl.autoRotateSpeed = 0.3;
 
 // ── Materials ────────────────────────────────────────
 const matGlow = new THREE.MeshStandardMaterial({{
-    color: 0xff6b00, emissive: 0xff4400, emissiveIntensity: 1.2,
+    color: palette.glow, emissive: palette.glowEmit, emissiveIntensity: palette.glowEmitI,
     roughness: 0.3, metalness: 0.1
 }});
 const matX = new THREE.MeshStandardMaterial({{ color: 0xff3333, emissive: 0xff0000, emissiveIntensity: 0.6, roughness: 0.4 }});
@@ -150,7 +292,7 @@ const matZ = new THREE.MeshStandardMaterial({{ color: 0x3388ff, emissive: 0x0044
 const sphereGeo = new THREE.SphereGeometry(1, 64, 48);
 const wireGeo = new THREE.EdgesGeometry(sphereGeo);
 scene.add(new THREE.LineSegments(wireGeo,
-    new THREE.LineBasicMaterial({{ color: 0x332211, transparent: true, opacity: 0.4 }})));
+    new THREE.LineBasicMaterial({{ color: palette.wire, transparent: true, opacity: palette.wireOp }})));
 
 // ── Reference rings ──────────────────────────────────
 function ring(r, rx, ry, rz, col, op) {{
@@ -164,9 +306,9 @@ function ring(r, rx, ry, rz, col, op) {{
     l.rotation.set(rx, ry, rz);
     return l;
 }}
-scene.add(ring(1, 0, 0, 0, 0x332211, 0.25));
-scene.add(ring(1, Math.PI/2, 0, 0, 0x332233, 0.18));
-scene.add(ring(1, 0, 0, Math.PI/2, 0x332222, 0.18));
+scene.add(ring(1, 0, 0, 0, palette.ring1, palette.ringOp1));
+scene.add(ring(1, Math.PI/2, 0, 0, palette.ring2, palette.ringOp2));
+scene.add(ring(1, 0, 0, Math.PI/2, palette.ring3, palette.ringOp2));
 
 // ── Axes ─────────────────────────────────────────────
 function createAxis(from, to, mat) {{
@@ -209,13 +351,11 @@ function makeLabel(text, pos, color) {{
     sp.scale.set(0.4, 0.2, 1);
     scene.add(sp);
 }}
-// Pole labels — placed away from axis tips
-makeLabel('|0⟩', new THREE.Vector3(0, 0, 1.35), '#ff6b00');
-makeLabel('|1⟩', new THREE.Vector3(0, 0, -1.20), '#ff6b00');
-// Axis labels — placed well beyond arrowheads (which end at +/-1.25)
-makeLabel('X', new THREE.Vector3(1.40, 0, 0), '#ff3333');
-makeLabel('Y', new THREE.Vector3(0, 1.40, 0), '#33ff33');
-makeLabel('Z', new THREE.Vector3(0, 0, 1.50), '#3388ff');
+makeLabel('|0⟩', new THREE.Vector3(0, 0, 1.35), palette.label0);
+makeLabel('|1⟩', new THREE.Vector3(0, 0, -1.20), palette.label0);
+makeLabel('X', new THREE.Vector3(1.40, 0, 0), palette.labelX);
+makeLabel('Y', new THREE.Vector3(0, 1.40, 0), palette.labelY);
+makeLabel('Z', new THREE.Vector3(0, 0, 1.50), palette.labelZ);
 
 // ── State vector arrow ───────────────────────────────
 const arrowGroup = new THREE.Group();
@@ -254,11 +394,11 @@ function updateAxisHighlight(ax, ay, az, visible) {{
     if (l < 0.001) return;
     const dir = new THREE.Vector3(ax, ay, az).normalize();
 
-    // Solid backbone line (subtle)
+    // Solid backbone line
     const spinePts = [dir.clone().multiplyScalar(-1.3), dir.clone().multiplyScalar(1.3)];
     const spineGeo = new THREE.BufferGeometry().setFromPoints(spinePts);
     axisHL.add(new THREE.Line(spineGeo,
-        new THREE.LineBasicMaterial({{ color: 0xffaa00, transparent: true, opacity: 0.3 }})));
+        new THREE.LineBasicMaterial({{ color: palette.spineCol, transparent: true, opacity: palette.spineOp }})));
 
     // Dashed highlight segments
     const dashPts = [];
@@ -272,14 +412,14 @@ function updateAxisHighlight(ax, ay, az, visible) {{
     }}
     const dg = new THREE.BufferGeometry().setFromPoints(dashPts);
     axisHL.add(new THREE.LineSegments(dg,
-        new THREE.LineBasicMaterial({{ color: 0xffcc00, transparent: true, opacity: 0.9 }})));
+        new THREE.LineBasicMaterial({{ color: palette.dashCol, transparent: true, opacity: palette.dashOp }})));
 
-    // Arrow cones at both ends to indicate axis direction
+    // Arrow cones at both ends
     [1, -1].forEach(function(sign) {{
         const tip = dir.clone().multiplyScalar(sign * 1.35);
         const coneGeo = new THREE.ConeGeometry(0.05, 0.14, 8);
         const cone = new THREE.Mesh(coneGeo,
-            new THREE.MeshStandardMaterial({{ color: 0xffcc00, emissive: 0xff8800,
+            new THREE.MeshStandardMaterial({{ color: palette.axisHL, emissive: palette.coneEmit,
                 emissiveIntensity: 0.5, roughness: 0.4 }}));
         cone.position.copy(tip);
         cone.quaternion.setFromUnitVectors(
@@ -292,12 +432,35 @@ function updateAxisHighlight(ax, ay, az, visible) {{
 const trajGroup = new THREE.Group();
 scene.add(trajGroup);
 
+function updateTrajectory(framePoints, currentIdx) {{
+    while (trajGroup.children.length > 0) trajGroup.remove(trajGroup.children[0]);
+    if (!framePoints || framePoints.length < 2) return;
+    const shown = framePoints.slice(0, currentIdx + 1);
+    if (shown.length < 2) return;
+    const curve = new THREE.CatmullRomCurve3(
+        shown.map(p => new THREE.Vector3(p[0], p[1], p[2])));
+    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
+    const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
+        color: palette.trajCol, emissive: palette.trajEmit, emissiveIntensity: palette.trajEmitI,
+        roughness: 0.2, transparent: true, opacity: 0.85
+    }}));
+    trajGroup.add(tube);
+    for (let i = 0; i < shown.length; i += Math.max(1, Math.floor(shown.length / 20))) {{
+        const p = shown[i];
+        const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
+        const dot = new THREE.Mesh(dotGeo, matGlow);
+        dot.position.set(p[0], p[1], p[2]);
+        trajGroup.add(dot);
+    }}
+}}
+
 // ── Animation state ──────────────────────────────────
-const frames = DATA.frames || [];
-const boundaries = DATA.boundaries || [];
-const labels = DATA.labels || [];
-const details = DATA.details || [];
-const hasGates = boundaries.length > 0;
+const frames = DATA.chain_frames && DATA.chain_frames.length > 0
+    ? DATA.chain_frames : (DATA.frames || []);
+const boundaries = DATA.chain_boundaries || [];
+const chainLabels = DATA.chain_labels || [];
+const chainDetails = DATA.chain_details || [];
+const isChain = boundaries.length > 0;
 
 let currentFrame = 0;
 let playing = true;
@@ -311,13 +474,20 @@ let currentGateIdx = 0;
 if (DATA.bloch_vector) {{
     updateArrow(DATA.bloch_vector[0], DATA.bloch_vector[1], DATA.bloch_vector[2]);
 }}
-if (hasGates && details.length > 0) {{
-    const d = details[0];
+if (isChain && chainDetails.length > 0) {{
+    const d = chainDetails[0];
     updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
+}} else if (DATA.axis) {{
+    updateAxisHighlight(DATA.axis[0], DATA.axis[1], DATA.axis[2], true);
 }}
 
 function updateInfo() {{
-    const g = hasGates && labels.length > 0 ? (labels[currentGateIdx] || '-') : '-';
+    let g;
+    if (isChain && chainLabels.length > 0) {{
+        g = chainLabels[currentGateIdx] || '-';
+    }} else {{
+        g = DATA.gate_label || '-';
+    }}
     const bv = DATA.bloch_vector || [0,0,0];
     document.getElementById('info-gate').textContent = g;
     document.getElementById('info-bloch').textContent =
@@ -327,7 +497,7 @@ updateInfo();
 
 // ── Chain gate segment tracking ──────────────────────
 function getGateIndex(frameIdx) {{
-    if (!hasGates || boundaries.length === 0) return 0;
+    if (!isChain || boundaries.length === 0) return 0;
     for (let i = boundaries.length - 1; i >= 0; i--) {{
         if (frameIdx >= boundaries[i]) return i;
     }}
@@ -354,7 +524,7 @@ function updateChainTrajectory(frameIdx) {{
             segFrames.map(p => new THREE.Vector3(p[0], p[1], p[2])));
         const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
         const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
-            color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 0.4,
+            color: palette.trajCol, emissive: palette.trajEmit, emissiveIntensity: palette.trajEmitI * 0.5,
             roughness: 0.2, transparent: true, opacity: opacity
         }}));
         trajGroup.add(tube);
@@ -370,7 +540,7 @@ function updateChainTrajectory(frameIdx) {{
         shown.map(p => new THREE.Vector3(p[0], p[1], p[2])));
     const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.015, 8, false);
     const tube = new THREE.Mesh(tubeGeo, new THREE.MeshStandardMaterial({{
-        color: 0xff8c00, emissive: 0xff4400, emissiveIntensity: 0.8,
+        color: palette.trajCol, emissive: palette.trajEmit, emissiveIntensity: palette.trajEmitI,
         roughness: 0.2, transparent: true, opacity: 0.85
     }}));
     trajGroup.add(tube);
@@ -400,10 +570,14 @@ btnPlay.addEventListener('click', function() {{
         btnPlay.classList.add('active');
         if (frames.length > 0) {{
             updateArrow(frames[0][0], frames[0][1], frames[0][2]);
-            updateChainTrajectory(0);
-            if (details.length > 0) {{
-                const d = details[0];
-                updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
+            if (isChain) {{
+                updateChainTrajectory(0);
+                if (chainDetails.length > 0) {{
+                    const d = chainDetails[0];
+                    updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
+                }}
+            }} else {{
+                updateTrajectory(frames, 0);
             }}
         }}
     }} else {{
@@ -427,10 +601,14 @@ btnReset.addEventListener('click', function() {{
     if (frames.length > 0) {{
         const f = frames[0];
         updateArrow(f[0], f[1], f[2]);
-        updateChainTrajectory(0);
-        if (details.length > 0) {{
-            const d = details[0];
-            updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
+        if (isChain) {{
+            updateChainTrajectory(0);
+            if (chainDetails.length > 0) {{
+                const d = chainDetails[0];
+                updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
+            }}
+        }} else {{
+            updateTrajectory(frames, 0);
         }}
     }}
 }});
@@ -459,18 +637,20 @@ function animate() {{
         const f = frames[currentFrame];
         updateArrow(f[0], f[1], f[2]);
 
-        if (hasGates) {{
+        if (isChain) {{
             const newGateIdx = getGateIndex(currentFrame);
             if (newGateIdx !== currentGateIdx) {{
                 currentGateIdx = newGateIdx;
-                if (currentGateIdx < details.length) {{
-                    const d = details[currentGateIdx];
+                if (currentGateIdx < chainDetails.length) {{
+                    const d = chainDetails[currentGateIdx];
                     updateAxisHighlight(d.axis[0], d.axis[1], d.axis[2], true);
                 }}
             }}
             updateChainTrajectory(currentFrame);
             document.getElementById('info-gate').textContent =
-                labels[currentGateIdx] || '-';
+                chainLabels[currentGateIdx] || '-';
+        }} else {{
+            updateTrajectory(frames, currentFrame);
         }}
 
         document.getElementById('info-bloch').textContent =
