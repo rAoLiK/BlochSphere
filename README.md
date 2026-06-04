@@ -109,7 +109,7 @@
 ### 安装
 
 ```bash
-git clone git@github.com:rAoLiK/BlochSphere.git
+git clone https://github.com/rAoLiK/BlochSphere.git
 cd BlochSphere
 ```
 
@@ -213,13 +213,13 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 | 门 | 轴 | 角度 | 矩阵 | 说明 |
 |------|------|-------|------|-------------|
-| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | 比特翻转： $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
-| Y | $\hat{y}$ | $\pi$ | $\begin{pmatrix}0&-i\\i&0\end{pmatrix}$ | 比特相位翻转 |
-| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | 相位翻转： $\vert 1\rangle \to -\vert 1\rangle$ |
-| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$ | 产生等幅叠加 |
-| Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $x$ 轴任意角度旋转 |
-| Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $y$ 轴任意角度旋转 |
-| Rz($\theta$) | $\hat{z}$ | $\theta$ | $\begin{pmatrix}e^{-i\theta/2}&0\\0&e^{i\theta/2}\end{pmatrix}$ | 绕 $z$ 轴任意角度旋转 |
+| X | $\hat{x}$ | $\pi$ | $\pmatrix{0&1\\1&0}$ | 比特翻转： $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
+| Y | $\hat{y}$ | $\pi$ | $\pmatrix{0&-i\\i&0}$ | 比特相位翻转 |
+| Z | $\hat{z}$ | $\pi$ | $\pmatrix{1&0\\0&-1}$ | 相位翻转： $\vert 1\rangle \to -\vert 1\rangle$ |
+| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\pmatrix{1&1\\1&-1}$ | 产生等幅叠加 |
+| Rx | $\hat{x}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | 绕 $x$ 轴任意角度旋转 |
+| Ry | $\hat{y}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | 绕 $y$ 轴任意角度旋转 |
+| Rz | $\hat{z}$ | $\theta$ | $\pmatrix{e^{-i\theta/2}&0\\0&e^{i\theta/2}}$ | 绕 $z$ 轴任意角度旋转 |
 
 </div>
 

@@ -109,7 +109,7 @@ The application can export animated GIFs of the Bloch sphere evolution. Below ar
 ### Installation
 
 ```bash
-git clone git@github.com:rAoLiK/BlochSphere.git
+git clone https://github.com/rAoLiK/BlochSphere.git
 cd BlochSphere
 ```
 
@@ -213,13 +213,13 @@ The standard gates and their matrix representations:
 
 | Gate | Axis | Angle | Matrix | Description |
 |------|------|-------|--------|-------------|
-| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | Bit flip: $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
-| Y | $\hat{y}$ | $\pi$ | $\begin{pmatrix}0&-i\\i&0\end{pmatrix}$ | Bit-phase flip |
-| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | Phase flip: $\vert 1\rangle \to -\vert 1\rangle$ |
-| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$ | Creates equal superposition |
-| Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $x$ |
-| Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $y$ |
-| Rz($\theta$) | $\hat{z}$ | $\theta$ | $\begin{pmatrix}e^{-i\theta/2}&0\\0&e^{i\theta/2}\end{pmatrix}$ | Arbitrary rotation about $z$ |
+| X | $\hat{x}$ | $\pi$ | $\pmatrix{0&1\\1&0}$ | Bit flip: $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
+| Y | $\hat{y}$ | $\pi$ | $\pmatrix{0&-i\\i&0}$ | Bit-phase flip |
+| Z | $\hat{z}$ | $\pi$ | $\pmatrix{1&0\\0&-1}$ | Phase flip: $\vert 1\rangle \to -\vert 1\rangle$ |
+| H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\pmatrix{1&1\\1&-1}$ | Creates equal superposition |
+| Rx | $\hat{x}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $x$ |
+| Ry | $\hat{y}$ | $\theta$ | $\pmatrix{\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}}$ | Arbitrary rotation about $y$ |
+| Rz | $\hat{z}$ | $\theta$ | $\pmatrix{e^{-i\theta/2}&0\\0&e^{i\theta/2}}$ | Arbitrary rotation about $z$ |
 
 </div>
 
