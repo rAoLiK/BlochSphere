@@ -104,12 +104,14 @@
 ### 环境要求
 
 - [Miniforge](https://github.com/conda-forge/miniforge) 或 Anaconda
-- Git
 
 ### 安装
 
+从 [Releases](https://github.com/rAoLiK/BlochSphere/releases) 页面下载最新版本的压缩包，解压后进入项目目录：
+
 ```bash
-git clone https://github.com/rAoLiK/BlochSphere.git
+tar -xzf BlochSphere-v2.0.tar.gz    # Linux / WSL
+# 或解压 BlochSphere-v2.0.zip       # Windows
 cd BlochSphere
 ```
 

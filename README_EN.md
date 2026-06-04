@@ -104,12 +104,14 @@ The application can export animated GIFs of the Bloch sphere evolution. Below ar
 ### Prerequisites
 
 - [Miniforge](https://github.com/conda-forge/miniforge) or Anaconda
-- Git
 
 ### Installation
 
+Download the latest release archive from the [Releases](https://github.com/rAoLiK/BlochSphere/releases) page, extract it, and enter the project directory:
+
 ```bash
-git clone https://github.com/rAoLiK/BlochSphere.git
+tar -xzf BlochSphere-v2.0.tar.gz    # Linux / WSL
+# or extract BlochSphere-v2.0.zip    # Windows
 cd BlochSphere
 ```
 
