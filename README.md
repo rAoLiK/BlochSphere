@@ -14,7 +14,7 @@
 
 - **3D 布洛赫球**：基于 Three.js 渲染，支持鼠标旋转、缩放与平移，配有 CRT 扫描线视觉效果
 - **量子门操作**：支持泡利门 X / Y / Z、阿达马门 H 及参数化旋转门 Rx / Ry / Rz，旋转门可通过滑块连续调节角度
-- **多种初始态**：预设六种量子态——$|0\rangle$、$|1\rangle$、$|+\rangle$、$|-\rangle$、$|+i\rangle$、$|-i\rangle$，同时支持通过极坐标 $(\theta, \phi)$ 自定义布洛赫球面上任意初始态
+- **多种初始态**：预设六种量子态——$\vert 0\rangle$、$\vert 1\rangle$、$\vert +\rangle$、$\vert -\rangle$、$\vert +i\rangle$、$\vert -i\rangle$，同时支持通过极坐标 $(\theta, \phi)$ 自定义布洛赫球面上任意初始态
 - **单门模式**：逐个应用量子门，实时观测态矢量演化与轨迹弧线
 - **门链模式**：自由配置多门序列，通过弹出窗口逐门设置参数，一键执行完整链路，表格展示各步中间态
 - **实时数据面板**：狄拉克符号、测量概率柱状图、布洛赫坐标、门矩阵 LaTeX 渲染
@@ -147,7 +147,7 @@ python -m pytest tests/ -v
 
 「SINGLE GATE」标签页用于逐个应用量子门并观察结果。
 
-1. 从侧边栏选择初始态：$|0\rangle$、$|1\rangle$、$|+\rangle$，或输入自定义极坐标 $(\theta, \phi)$。
+1. 从侧边栏选择初始态：$\vert 0\rangle$、$\vert 1\rangle$、$\vert +\rangle$，或输入自定义极坐标 $(\theta, \phi)$。
 2. 选择量子门：X, Y, Z, H, Rx, Ry, Rz。
 3. 对于旋转门（Rx/Ry/Rz），使用滑块设置旋转角度。
 4. 点击 APPLY 执行门操作。态矢量从初始态动画演化至末态，轨迹弧线绘制在球面上。
@@ -189,11 +189,11 @@ python -m pytest tests/ -v
 
 任意单量子比特纯态可以表示为：
 
-$$|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$$
+$$\vert \psi\rangle = \cos\frac{\theta}{2}\vert 0\rangle + e^{i\phi}\sin\frac{\theta}{2}\vert 1\rangle$$
 
-其中 $\theta \in [0, \pi]$ 为极角，$\phi \in [0, 2\pi)$ 为方位角。这一参数化将每个量子比特态映射到 $\mathbb{R}^3$ 中单位球面上的一个点，即布洛赫球。北极对应 $|0\rangle$，南极对应 $|1\rangle$，赤道态是 $|0\rangle$ 和 $|1\rangle$ 的等幅叠加，具有不同的相对相位。
+其中 $\theta \in [0, \pi]$ 为极角，$\phi \in [0, 2\pi)$ 为方位角。这一参数化将每个量子比特态映射到 $\mathbb{R}^3$ 中单位球面上的一个点，即布洛赫球。北极对应 $\vert 0\rangle$，南极对应 $\vert 1\rangle$，赤道态是 $\vert 0\rangle$ 和 $\vert 1\rangle$ 的等幅叠加，具有不同的相对相位。
 
-态 $|\psi\rangle$ 对应的布洛赫矢量 $\mathbf{r} = (x, y, z)$ 由泡利矩阵的期望值给出：
+态 $\vert \psi\rangle$ 对应的布洛赫矢量 $\mathbf{r} = (x, y, z)$ 由泡利矩阵的期望值给出：
 
 $$x = \langle\sigma_x\rangle, \quad y = \langle\sigma_y\rangle, \quad z = \langle\sigma_z\rangle$$
 
@@ -213,9 +213,9 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 | 门 | 轴 | 角度 | 矩阵 | 说明 |
 |------|------|-------|------|-------------|
-| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | 比特翻转：$\|0\rangle \leftrightarrow \|1\rangle$ |
+| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | 比特翻转：$\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
 | Y | $\hat{y}$ | $\pi$ | $\begin{pmatrix}0&-i\\i&0\end{pmatrix}$ | 比特相位翻转 |
-| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | 相位翻转：$\|1\rangle \to -\|1\rangle$ |
+| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | 相位翻转：$\vert 1\rangle \to -\vert 1\rangle$ |
 | H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$ | 产生等幅叠加 |
 | Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $x$ 轴任意角度旋转 |
 | Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | 绕 $y$ 轴任意角度旋转 |
@@ -223,7 +223,7 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 </div>
 
-阿达马门 H 值得特别说明：它绕 $\hat{x}$ 与 $\hat{z}$ 之间倾斜 $45^\circ$ 的轴旋转 $\pi$ 角度。将 $|0\rangle$ 映射到 $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$，将 $|1\rangle$ 映射到 $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$。
+阿达马门 H 值得特别说明：它绕 $\hat{x}$ 与 $\hat{z}$ 之间倾斜 $45^\circ$ 的轴旋转 $\pi$ 角度。将 $\vert 0\rangle$ 映射到 $\vert +\rangle = (\vert 0\rangle+\vert 1\rangle)/\sqrt{2}$，将 $\vert 1\rangle$ 映射到 $\vert -\rangle = (\vert 0\rangle-\vert 1\rangle)/\sqrt{2}$。
 
 > [!NOTE]
 > **关于旋转门角度约定**
@@ -240,19 +240,19 @@ $$U = \exp\!\left(-i\frac{\theta}{2}\,\hat{n}\cdot\boldsymbol{\sigma}\right) = \
 
 ### 态演化与轨迹
 
-当门 $U$ 作用于态 $|\psi\rangle$ 时，布洛赫矢量沿球面上的一段大圆弧旋转。旋转轴为门的轴，角度为门的角度。本应用通过将旋转插值为若干小步来可视化这一过程，产生平滑动画并绘制轨迹弧。
+当门 $U$ 作用于态 $\vert \psi\rangle$ 时，布洛赫矢量沿球面上的一段大圆弧旋转。旋转轴为门的轴，角度为门的角度。本应用通过将旋转插值为若干小步来可视化这一过程，产生平滑动画并绘制轨迹弧。
 
 对于门链 $U_1, U_2, \ldots, U_n$，末态为：
 
-$$|\psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,|\psi_{\mathrm{initial}}\rangle$$
+$$\vert \psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,\vert \psi_{\mathrm{initial}}\rangle$$
 
 轨迹为各段弧的拼接，每个门的终点即为下一个门的起点。
 
 ### 测量与概率
 
-当量子比特处于态 $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$ 时，在计算基下测量：
+当量子比特处于态 $\vert \psi\rangle = \alpha\vert 0\rangle + \beta\vert 1\rangle$ 时，在计算基下测量：
 
-$$P(0) = |\alpha|^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = |\beta|^2 = \sin^2\frac{\theta}{2}$$
+$$P(0) = \vert \alpha\vert ^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = \vert \beta\vert ^2 = \sin^2\frac{\theta}{2}$$
 
 布洛赫矢量的 $z$ 分量编码了这一信息：
 

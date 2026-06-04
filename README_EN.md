@@ -14,7 +14,7 @@ Interactive 3D visualization of quantum states and gate operations on the Bloch 
 
 - **3D Bloch Sphere** — Three.js rendered with interactive rotation, zoom, and pan; CRT scanline visual effect
 - **Quantum Gates** — Pauli gates X / Y / Z, Hadamard gate H, and parametric rotation gates Rx / Ry / Rz with continuous angle slider
-- **Multiple Initial States** — Six presets: $|0\rangle$, $|1\rangle$, $|+\rangle$, $|-\rangle$, $|+i\rangle$, $|-i\rangle$; custom polar coordinates $(\theta, \phi)$ for any point on the Bloch sphere
+- **Multiple Initial States** — Six presets: $\vert 0\rangle$, $\vert 1\rangle$, $\vert +\rangle$, $\vert -\rangle$, $\vert +i\rangle$, $\vert -i\rangle$; custom polar coordinates $(\theta, \phi)$ for any point on the Bloch sphere
 - **Single Gate Mode** — Apply gates one at a time, observe real-time state evolution with trajectory arcs
 - **Gate Chain Mode** — Configure multi-gate sequences via popover dialogs, execute the full chain with one click, view intermediate states in a table
 - **Real-time Data Panel** — Dirac notation, probability bar chart, Bloch coordinates, gate matrix LaTeX rendering
@@ -147,7 +147,7 @@ python -m pytest tests/ -v
 
 The "SINGLE GATE" tab lets you apply one quantum gate at a time and observe the result.
 
-1. Select an initial state from the sidebar: $|0\rangle$, $|1\rangle$, $|+\rangle$, or enter custom polar coordinates $(\theta, \phi)$.
+1. Select an initial state from the sidebar: $\vert 0\rangle$, $\vert 1\rangle$, $\vert +\rangle$, or enter custom polar coordinates $(\theta, \phi)$.
 2. Choose a gate: X, Y, Z, H, Rx, Ry, or Rz.
 3. For rotation gates (Rx/Ry/Rz), adjust the angle with the slider.
 4. Click APPLY to execute the gate. The state vector animates from the initial state to the final state, with a trajectory arc drawn on the sphere surface.
@@ -189,11 +189,11 @@ Click "EXPORT GIF" in the sidebar to generate an animated GIF of the current sta
 
 Any pure state of a single qubit can be written as:
 
-$$|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle$$
+$$\vert \psi\rangle = \cos\frac{\theta}{2}\vert 0\rangle + e^{i\phi}\sin\frac{\theta}{2}\vert 1\rangle$$
 
-where $\theta \in [0, \pi]$ is the polar angle and $\phi \in [0, 2\pi)$ is the azimuthal angle. This parameterization maps every qubit state to a point on the unit sphere in $\mathbb{R}^3$, known as the Bloch sphere. The north pole corresponds to $|0\rangle$, the south pole to $|1\rangle$, and the equatorial states are equal superpositions of $|0\rangle$ and $|1\rangle$ with varying relative phase.
+where $\theta \in [0, \pi]$ is the polar angle and $\phi \in [0, 2\pi)$ is the azimuthal angle. This parameterization maps every qubit state to a point on the unit sphere in $\mathbb{R}^3$, known as the Bloch sphere. The north pole corresponds to $\vert 0\rangle$, the south pole to $\vert 1\rangle$, and the equatorial states are equal superpositions of $\vert 0\rangle$ and $\vert 1\rangle$ with varying relative phase.
 
-The Bloch vector $\mathbf{r} = (x, y, z)$ for a state $|\psi\rangle$ is given by the expectation values of the Pauli matrices:
+The Bloch vector $\mathbf{r} = (x, y, z)$ for a state $\vert \psi\rangle$ is given by the expectation values of the Pauli matrices:
 
 $$x = \langle\sigma_x\rangle, \quad y = \langle\sigma_y\rangle, \quad z = \langle\sigma_z\rangle$$
 
@@ -213,9 +213,9 @@ The standard gates and their matrix representations:
 
 | Gate | Axis | Angle | Matrix | Description |
 |------|------|-------|--------|-------------|
-| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | Bit flip: $\|0\rangle \leftrightarrow \|1\rangle$ |
+| X | $\hat{x}$ | $\pi$ | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ | Bit flip: $\vert 0\rangle \leftrightarrow \vert 1\rangle$ |
 | Y | $\hat{y}$ | $\pi$ | $\begin{pmatrix}0&-i\\i&0\end{pmatrix}$ | Bit-phase flip |
-| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | Phase flip: $\|1\rangle \to -\|1\rangle$ |
+| Z | $\hat{z}$ | $\pi$ | $\begin{pmatrix}1&0\\0&-1\end{pmatrix}$ | Phase flip: $\vert 1\rangle \to -\vert 1\rangle$ |
 | H | $(\hat{x}+\hat{z})/\sqrt{2}$ | $\pi$ | $\frac{1}{\sqrt{2}}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$ | Creates equal superposition |
 | Rx($\theta$) | $\hat{x}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-i\sin\frac{\theta}{2}\\-i\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $x$ |
 | Ry($\theta$) | $\hat{y}$ | $\theta$ | $\begin{pmatrix}\cos\frac{\theta}{2}&-\sin\frac{\theta}{2}\\\sin\frac{\theta}{2}&\cos\frac{\theta}{2}\end{pmatrix}$ | Arbitrary rotation about $y$ |
@@ -223,7 +223,7 @@ The standard gates and their matrix representations:
 
 </div>
 
-The Hadamard gate H deserves special attention: it rotates the state by $\pi$ about an axis tilted $45^\circ$ between $\hat{x}$ and $\hat{z}$. This maps $|0\rangle$ to $|+\rangle = (|0\rangle+|1\rangle)/\sqrt{2}$ and $|1\rangle$ to $|-\rangle = (|0\rangle-|1\rangle)/\sqrt{2}$.
+The Hadamard gate H deserves special attention: it rotates the state by $\pi$ about an axis tilted $45^\circ$ between $\hat{x}$ and $\hat{z}$. This maps $\vert 0\rangle$ to $\vert +\rangle = (\vert 0\rangle+\vert 1\rangle)/\sqrt{2}$ and $\vert 1\rangle$ to $\vert -\rangle = (\vert 0\rangle-\vert 1\rangle)/\sqrt{2}$.
 
 > [!NOTE]
 > **Rotation Gate Angle Convention**
@@ -240,19 +240,19 @@ The Hadamard gate H deserves special attention: it rotates the state by $\pi$ ab
 
 ### State Evolution and Trajectory
 
-When a gate $U$ is applied to a state $|\psi\rangle$, the Bloch vector rotates along a great circle arc on the sphere surface. The axis of rotation is the gate's axis, and the angle is the gate's angle. This application visualizes this evolution by interpolating the rotation in small steps, producing a smooth animation that traces the trajectory arc.
+When a gate $U$ is applied to a state $\vert \psi\rangle$, the Bloch vector rotates along a great circle arc on the sphere surface. The axis of rotation is the gate's axis, and the angle is the gate's angle. This application visualizes this evolution by interpolating the rotation in small steps, producing a smooth animation that traces the trajectory arc.
 
 For a chain of gates $U_1, U_2, \ldots, U_n$, the final state is:
 
-$$|\psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,|\psi_{\mathrm{initial}}\rangle$$
+$$\vert \psi_{\mathrm{final}}\rangle = U_n \cdots U_2\, U_1\,\vert \psi_{\mathrm{initial}}\rangle$$
 
 The trajectory is the concatenation of the individual arcs, with the endpoint of each gate serving as the starting point of the next.
 
 ### Measurement and Probabilities
 
-When a qubit in state $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$ is measured in the computational basis:
+When a qubit in state $\vert \psi\rangle = \alpha\vert 0\rangle + \beta\vert 1\rangle$ is measured in the computational basis:
 
-$$P(0) = |\alpha|^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = |\beta|^2 = \sin^2\frac{\theta}{2}$$
+$$P(0) = \vert \alpha\vert ^2 = \cos^2\frac{\theta}{2}, \qquad P(1) = \vert \beta\vert ^2 = \sin^2\frac{\theta}{2}$$
 
 The $z$-component of the Bloch vector encodes this:
 
