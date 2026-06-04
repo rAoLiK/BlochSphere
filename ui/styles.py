@@ -76,11 +76,11 @@ def _build_theme_css(theme: str) -> str:
     v = THEME_VARS[theme]
     is_light = theme == "light"
 
-    # ── Light-mode overrides ──────────────────────────────────────
+    # ── Light-mode overrides (text color only) ──────────────────
     light_overrides = ""
     if is_light:
         light_overrides = """
-/* ── Light mode: force all Streamlit text dark ──────────── */
+/* Light mode: force text dark */
 [data-testid="stSidebar"] *,
 [data-testid="stSidebar"] label,
 [data-testid="stSidebar"] p,
@@ -99,359 +99,6 @@ def _build_theme_css(theme: str) -> str:
 .main .block-container label,
 .main .block-container .stMarkdown,
 .main .block-container .stMarkdown p {
-    color: var(--text-primary) !important;
-}
-
-/* Accent-colored elements keep accent color */
-[data-testid="stSidebar"] h3,
-.main h1, .main h2, .main h3, .main h4, .main h5,
-.header-sub,
-.gate-sel-label,
-.data-label,
-.prob-header {
-    color: var(--accent) !important;
-}
-
-/* Secondary/muted text */
-.data-label,
-.prob-header,
-.istate-idx,
-.istate-init,
-.istate-vec,
-.hist-idx,
-.caption,
-.stCaption,
-.stCaptionContainer {
-    color: var(--text-muted) !important;
-}
-
-/* Data values stay accent-glow */
-.data-value,
-.ket,
-.hist-ket,
-.istate-ket,
-.istate-prob {
-    color: var(--accent-glow) !important;
-}
-
-/* Radio buttons */
-.stRadio label {
-    color: var(--text-secondary) !important;
-}
-.stRadio label[data-selected="true"] {
-    border-color: var(--accent) !important;
-    background: var(--accent-bg) !important;
-    color: var(--accent) !important;
-}
-
-/* Selectbox text */
-.stSelectbox [data-baseweb="select"] * {
-    color: var(--text-primary) !important;
-}
-.stSelectbox [data-baseweb="select"] {
-    background-color: var(--bg-surface) !important;
-}
-
-/* Slider */
-.stSlider [data-baseweb="slider"] > div:first-child {
-    background: var(--border) !important;
-}
-
-/* Buttons — accent on surface bg */
-.stButton > button:not(:disabled) {
-    background-color: var(--bg-surface) !important;
-    color: var(--accent) !important;
-}
-.stButton > button:not(:disabled):hover {
-    background-color: var(--accent) !important;
-    color: #ffffff !important;
-}
-
-/* Disabled buttons (chain state nodes) keep accent styling */
-.stButton > button:disabled {
-    color: var(--accent) !important;
-    background: var(--accent-bg) !important;
-    border-color: var(--accent) !important;
-    opacity: 1 !important;
-}
-
-/* Popover trigger — accent bg, no white border */
-[data-baseweb="popover"] > div > button,
-[data-baseweb="popover"] button[data-baseweb="button"] {
-    background: var(--accent) !important;
-    color: var(--bg-root) !important;
-    border: 1.5px solid var(--accent) !important;
-    box-shadow: none !important;
-}
-[data-baseweb="popover"] > div > button:hover,
-[data-baseweb="popover"] button[data-baseweb="button"]:hover {
-    background: var(--accent-dim) !important;
-    color: #ffffff !important;
-    border-color: var(--accent-dim) !important;
-    box-shadow: 0 2px 8px var(--shadow-strong) !important;
-}
-
-/* Gate badges white text on accent */
-.istate-gate,
-.chain-gate {
-    color: #ffffff !important;
-}
-
-/* Expander text */
-.stExpander summary,
-.stExpander summary *,
-.stExpander summary h1,
-.stExpander summary h2,
-.stExpander summary h3,
-.stExpander summary h4,
-.stExpander summary h5,
-.stExpander summary p,
-.stExpander summary span,
-.stExpander summary div,
-.stExpander[open] summary,
-.stExpander[open] summary *,
-.stExpander[open] summary h1,
-.stExpander[open] summary h2,
-.stExpander[open] summary h3,
-.stExpander[open] summary h4,
-.stExpander[open] summary h5,
-.stExpander[open] summary p,
-.stExpander[open] summary span,
-.stExpander[open] summary div {
-    color: var(--accent) !important;
-    background-color: transparent !important;
-}
-.stExpander [data-testid="stExpanderDetails"],
-.stExpander [data-testid="stExpanderDetails"] p,
-.stExpander [data-testid="stExpanderDetails"] li,
-.stExpander [data-testid="stExpanderDetails"] strong {
-    color: var(--text-primary) !important;
-}
-.stExpander [data-testid="stExpanderDetails"] code {
-    color: var(--accent-glow) !important;
-}
-
-/* Tabs */
-.stTabs [data-baseweb="tab"] {
-    color: var(--text-secondary) !important;
-}
-.stTabs [aria-selected="true"] {
-    color: var(--accent) !important;
-}
-
-/* General text override */
-p, li, td, th, label, span, div {
-    color: var(--text-primary) !important;
-}
-h1, h2, h3, h4, h5 {
-    color: var(--accent) !important;
-}
-
-/* ── Dropdown / Popover portals (rendered outside sidebar) ─── */
-[data-baseweb="popover"],
-[data-baseweb="menu"],
-[data-baseweb="popover"] [data-baseweb="menu"],
-[data-baseweb="select"] [data-baseweb="popover"],
-[data-baseweb="select"] [data-baseweb="menu"],
-ul[data-baseweb="menu"],
-div[data-baseweb="popover"] {
-    background-color: var(--bg-surface) !important;
-    border-color: var(--border) !important;
-    color: var(--text-primary) !important;
-}
-
-[data-baseweb="popover"] li,
-[data-baseweb="menu"] li,
-[data-baseweb="popover"] [role="option"],
-[data-baseweb="menu"] [role="option"],
-ul[data-baseweb="menu"] li,
-[data-baseweb="select"] [role="option"],
-[data-baseweb="select"] li {
-    background-color: var(--bg-surface) !important;
-    color: var(--text-primary) !important;
-}
-
-[data-baseweb="popover"] li:hover,
-[data-baseweb="menu"] li:hover,
-[data-baseweb="popover"] [role="option"]:hover,
-[data-baseweb="menu"] [role="option"]:hover,
-[data-baseweb="select"] [role="option"]:hover,
-[data-baseweb="select"] li:hover,
-[data-baseweb="popover"] [aria-selected="true"],
-[data-baseweb="menu"] [aria-selected="true"],
-[data-baseweb="select"] [aria-selected="true"] {
-    background-color: var(--accent-bg) !important;
-    color: var(--accent) !important;
-}
-
-/* Dropdown highlighted/active item text */
-[data-baseweb="popover"] [data-highlighted="true"],
-[data-baseweb="menu"] [data-highlighted="true"] {
-    background-color: var(--accent-bg) !important;
-    color: var(--accent) !important;
-}
-
-/* Selectbox value text when closed */
-.stSelectbox [data-baseweb="select"] > div,
-.stSelectbox [data-baseweb="select"] input,
-.stSelectbox [data-baseweb="select"] [class*="ValueContainer"],
-.stSelectbox [data-baseweb="select"] [class*="singleValue"],
-.stSelectbox [data-baseweb="select"] [class*="placeholder"] {
-    color: var(--text-primary) !important;
-    background-color: var(--bg-surface) !important;
-}
-
-/* ── Dialog / Modal (st.dialog, configure gate popup) ──── */
-[data-baseweb="modal"],
-[data-baseweb="modal"] [role="dialog"],
-[data-testid="stDialog"],
-[data-testid="stDialog"] [role="dialog"],
-[data-baseweb="modal"] [data-baseweb="modal-content"],
-div[data-baseweb="modal"] {
-    background-color: var(--bg-surface) !important;
-    color: var(--text-primary) !important;
-}
-
-[data-baseweb="modal"] *,
-[data-testid="stDialog"] *,
-[data-baseweb="modal"] p,
-[data-baseweb="modal"] label,
-[data-baseweb="modal"] span,
-[data-baseweb="modal"] div,
-[data-baseweb="modal"] strong,
-[data-baseweb="modal"] em,
-[data-testid="stDialog"] p,
-[data-testid="stDialog"] label,
-[data-testid="stDialog"] span,
-[data-testid="stDialog"] div {
-    color: var(--text-primary) !important;
-}
-
-[data-baseweb="modal"] h1,
-[data-baseweb="modal"] h2,
-[data-baseweb="modal"] h3,
-[data-baseweb="modal"] h4,
-[data-baseweb="modal"] h5,
-[data-testid="stDialog"] h1,
-[data-testid="stDialog"] h2,
-[data-testid="stDialog"] h3,
-[data-testid="stDialog"] h4,
-[data-testid="stDialog"] h5 {
-    color: var(--accent) !important;
-}
-
-/* Dialog background — frosted glass on light bg */
-[data-baseweb="modal-backdrop"],
-div[data-baseweb="modal-backdrop"] {
-    background-color: rgba(180,170,160,0.25) !important;
-    backdrop-filter: blur(14px) saturate(1.1) !important;
-    -webkit-backdrop-filter: blur(14px) saturate(1.1) !important;
-}
-
-/* Dialog buttons */
-[data-baseweb="modal"] .stButton > button,
-[data-testid="stDialog"] .stButton > button {
-    background-color: var(--bg-surface) !important;
-    color: var(--accent) !important;
-    border-color: var(--accent) !important;
-}
-[data-baseweb="modal"] .stButton > button:hover,
-[data-testid="stDialog"] .stButton > button:hover {
-    background-color: var(--accent) !important;
-    color: #ffffff !important;
-}
-
-/* Dialog radio buttons */
-[data-baseweb="modal"] .stRadio label,
-[data-testid="stDialog"] .stRadio label {
-    background: var(--bg-root) !important;
-    color: var(--text-secondary) !important;
-    border-color: var(--border) !important;
-}
-[data-baseweb="modal"] .stRadio label[data-selected="true"],
-[data-testid="stDialog"] .stRadio label[data-selected="true"] {
-    background: var(--accent-bg) !important;
-    color: var(--accent) !important;
-    border-color: var(--accent) !important;
-}
-
-/* Dialog slider */
-[data-baseweb="modal"] .stSlider [data-baseweb="slider"] > div:first-child,
-[data-testid="stDialog"] .stSlider [data-baseweb="slider"] > div:first-child {
-    background: var(--border) !important;
-}
-
-/* Dialog scrollbar */
-[data-baseweb="modal"]::-webkit-scrollbar,
-[data-testid="stDialog"]::-webkit-scrollbar {
-    width: 5px;
-}
-[data-baseweb="modal"]::-webkit-scrollbar-track,
-[data-testid="stDialog"]::-webkit-scrollbar-track {
-    background: var(--bg-surface);
-}
-[data-baseweb="modal"]::-webkit-scrollbar-thumb,
-[data-testid="stDialog"]::-webkit-scrollbar-thumb {
-    background: var(--scrollbar);
-    border-radius: 3px;
-}
-
-/* ── Popover / portal containers — light mode ────────── */
-[data-baseweb="layer"],
-[data-baseweb="popover"] [data-baseweb="popover"],
-div[data-baseweb="popover"] {
-    background-color: var(--bg-surface) !important;
-}
-
-/* Text inside popover content area */
-[data-baseweb="popover"] [data-baseweb="popover"] p,
-[data-baseweb="popover"] [data-baseweb="popover"] span,
-[data-baseweb="popover"] [data-baseweb="popover"] label,
-[data-baseweb="popover"] [data-baseweb="popover"] div,
-[data-baseweb="popover"] [data-baseweb="popover"] strong {
-    color: var(--text-primary) !important;
-}
-
-/* Radio pills inside popover */
-[data-baseweb="popover"] [data-baseweb="popover"] label {
-    background: var(--bg-root) !important;
-    color: var(--text-secondary) !important;
-    border-color: var(--border) !important;
-}
-[data-baseweb="popover"] [data-baseweb="popover"] label[data-selected="true"] {
-    background: var(--accent-bg) !important;
-    color: var(--accent) !important;
-    border-color: var(--accent) !important;
-}
-
-/* Slider track inside popover */
-[data-baseweb="popover"] [data-baseweb="popover"] [data-baseweb="slider"] {
-    background: var(--border) !important;
-}
-
-/* REMOVE button inside popover */
-[data-baseweb="popover"] [data-baseweb="popover"] .stButton > button:not(:disabled) {
-    background-color: var(--bg-root) !important;
-    color: var(--accent) !important;
-    border-color: var(--accent) !important;
-}
-[data-baseweb="popover"] [data-baseweb="popover"] .stButton > button:not(:disabled):hover {
-    background-color: var(--accent) !important;
-    color: #ffffff !important;
-}
-
-/* ── Tooltip ────────────────────────────────────────── */
-[data-baseweb="tooltip"],
-[data-baseweb="tooltip"] * {
-    background-color: var(--bg-surface) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border) !important;
-}
-
-/* ── Toast notifications ────────────────────────────── */
-[data-baseweb="notification"],
-[data-baseweb="toast"] {
-    background-color: var(--bg-surface) !important;
     color: var(--text-primary) !important;
 }
 """
@@ -490,7 +137,23 @@ div[data-baseweb="popover"] {
 }}
 
 /* ── Global ──────────────────────────────────────────── */
-* {{ border-radius: var(--radius-sm) !important; }}
+/* border-radius only on containers, not spinners/icons */
+.stButton > button,
+[data-testid="stDownloadButton"] button,
+[data-testid="stDownloadButton"] a,
+.stTextInput > div,
+.stSelectbox > div,
+.stSlider,
+.stRadio > div,
+.stExpander,
+.stTabs,
+[data-baseweb="tab"],
+[data-baseweb="popover"],
+[data-baseweb="modal"],
+.stAlert,
+.stToast {{
+    border-radius: var(--radius-sm) !important;
+}}
 
 body, .stApp {{
     background-color: var(--bg-root);
@@ -1048,12 +711,370 @@ code {{ color: var(--accent-glow) !important; }}
     font-size: var(--text-sm) !important;
     letter-spacing: var(--tracking-wide);
     padding: 4px 12px !important;
+    color: var(--text-secondary) !important;
 }}
 .stTabs [aria-selected="true"] {{
     color: var(--accent) !important;
 }}
 .stTabs [data-baseweb="tab-border"] {{
     background-color: var(--accent) !important;
+}}
+
+/* ── Accent-colored elements ────────────────────────── */
+[data-testid="stSidebar"] h3,
+.main h1, .main h2, .main h3, .main h4, .main h5,
+.header-sub,
+.gate-sel-label,
+.data-label,
+.prob-header {{
+    color: var(--accent) !important;
+}}
+
+/* Secondary/muted text */
+.data-label,
+.prob-header,
+.istate-idx,
+.istate-init,
+.istate-vec,
+.hist-idx,
+.caption,
+.stCaption,
+.stCaptionContainer {{
+    color: var(--text-muted) !important;
+}}
+
+/* Data values accent-glow */
+.data-value,
+.ket,
+.hist-ket,
+.istate-ket,
+.istate-prob {{
+    color: var(--accent-glow) !important;
+}}
+
+/* ── Buttons ────────────────────────────────────────── */
+.stButton > button:not(:disabled) {{
+    background-color: var(--bg-surface) !important;
+    color: var(--accent) !important;
+}}
+.stButton > button:not(:disabled):hover,
+.stButton > button:not(:disabled):active {{
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
+    border-color: var(--accent) !important;
+}}
+.stButton > button:not(:disabled):focus {{
+    outline: none !important;
+    box-shadow: none !important;
+}}
+.stButton > button:disabled {{
+    color: var(--accent) !important;
+    background: var(--accent-bg) !important;
+    border-color: var(--accent) !important;
+    opacity: 1 !important;
+}}
+
+/* Download button — nuclear reset */
+[data-testid="stDownloadButton"] button,
+[data-testid="stDownloadButton"] a {{
+    all: unset !important;
+    background: var(--bg-surface) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 0.25rem !important;
+    padding: 0.375rem 1rem !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}}
+[data-testid="stDownloadButton"] button:hover,
+[data-testid="stDownloadButton"] button:active,
+[data-testid="stDownloadButton"] a:hover,
+[data-testid="stDownloadButton"] a:active {{
+    all: unset !important;
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 0.25rem !important;
+    padding: 0.375rem 1rem !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}}
+[data-testid="stDownloadButton"] button:focus,
+[data-testid="stDownloadButton"] a:focus {{
+    outline: none !important;
+    box-shadow: none !important;
+}}
+
+/* Radio buttons */
+.stRadio label {{
+    color: var(--text-secondary) !important;
+}}
+.stRadio label[data-selected="true"] {{
+    border-color: var(--accent) !important;
+    background: var(--accent-bg) !important;
+    color: var(--accent) !important;
+}}
+
+/* Selectbox */
+.stSelectbox [data-baseweb="select"] * {{
+    color: var(--text-primary) !important;
+}}
+.stSelectbox [data-baseweb="select"] {{
+    background-color: var(--bg-surface) !important;
+}}
+
+/* Slider */
+.stSlider [data-baseweb="slider"] > div:first-child {{
+    background: var(--border) !important;
+}}
+
+/* Popover trigger */
+[data-baseweb="popover"] > div > button,
+[data-baseweb="popover"] button[data-baseweb="button"] {{
+    background: var(--accent) !important;
+    color: var(--bg-root) !important;
+    border: 1.5px solid var(--accent) !important;
+    box-shadow: none !important;
+}}
+[data-baseweb="popover"] > div > button:hover,
+[data-baseweb="popover"] button[data-baseweb="button"]:hover {{
+    background: var(--accent-dim) !important;
+    color: #ffffff !important;
+    border-color: var(--accent-dim) !important;
+    box-shadow: 0 2px 8px var(--shadow-strong) !important;
+}}
+
+/* Gate badges */
+.istate-gate,
+.chain-gate {{
+    color: #ffffff !important;
+}}
+
+/* Expander */
+.stExpander summary,
+.stExpander summary *,
+.stExpander summary h1,
+.stExpander summary h2,
+.stExpander summary h3,
+.stExpander summary h4,
+.stExpander summary h5,
+.stExpander summary p,
+.stExpander summary span,
+.stExpander summary div,
+.stExpander[open] summary,
+.stExpander[open] summary *,
+.stExpander[open] summary h1,
+.stExpander[open] summary h2,
+.stExpander[open] summary h3,
+.stExpander[open] summary h4,
+.stExpander[open] summary h5,
+.stExpander[open] summary p,
+.stExpander[open] summary span,
+.stExpander[open] summary div {{
+    color: var(--accent) !important;
+    background-color: transparent !important;
+}}
+.stExpander [data-testid="stExpanderDetails"],
+.stExpander [data-testid="stExpanderDetails"] p,
+.stExpander [data-testid="stExpanderDetails"] li,
+.stExpander [data-testid="stExpanderDetails"] strong {{
+    color: var(--text-primary) !important;
+}}
+.stExpander [data-testid="stExpanderDetails"] code {{
+    color: var(--accent-glow) !important;
+}}
+
+/* ── Dropdown / Popover portals ─────────────────────── */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[data-baseweb="popover"] [data-baseweb="menu"],
+[data-baseweb="select"] [data-baseweb="popover"],
+[data-baseweb="select"] [data-baseweb="menu"],
+ul[data-baseweb="menu"],
+div[data-baseweb="popover"] {{
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border) !important;
+    color: var(--text-primary) !important;
+}}
+[data-baseweb="popover"] li,
+[data-baseweb="menu"] li,
+[data-baseweb="popover"] [role="option"],
+[data-baseweb="menu"] [role="option"],
+ul[data-baseweb="menu"] li,
+[data-baseweb="select"] [role="option"],
+[data-baseweb="select"] li {{
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+}}
+[data-baseweb="popover"] li:hover,
+[data-baseweb="menu"] li:hover,
+[data-baseweb="popover"] [role="option"]:hover,
+[data-baseweb="menu"] [role="option"]:hover,
+[data-baseweb="select"] [role="option"]:hover,
+[data-baseweb="select"] li:hover,
+[data-baseweb="popover"] [aria-selected="true"],
+[data-baseweb="menu"] [aria-selected="true"],
+[data-baseweb="select"] [aria-selected="true"] {{
+    background-color: var(--accent-bg) !important;
+    color: var(--accent) !important;
+}}
+[data-baseweb="popover"] [data-highlighted="true"],
+[data-baseweb="menu"] [data-highlighted="true"] {{
+    background-color: var(--accent-bg) !important;
+    color: var(--accent) !important;
+}}
+.stSelectbox [data-baseweb="select"] > div,
+.stSelectbox [data-baseweb="select"] input,
+.stSelectbox [data-baseweb="select"] [class*="ValueContainer"],
+.stSelectbox [data-baseweb="select"] [class*="singleValue"],
+.stSelectbox [data-baseweb="select"] [class*="placeholder"] {{
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface) !important;
+}}
+
+/* ── Dialog / Modal ─────────────────────────────────── */
+[data-baseweb="modal"],
+[data-baseweb="modal"] [role="dialog"],
+[data-testid="stDialog"],
+[data-testid="stDialog"] [role="dialog"],
+[data-baseweb="modal"] [data-baseweb="modal-content"],
+div[data-baseweb="modal"] {{
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+}}
+[data-baseweb="modal"] *,
+[data-testid="stDialog"] *,
+[data-baseweb="modal"] p,
+[data-baseweb="modal"] label,
+[data-baseweb="modal"] span,
+[data-baseweb="modal"] div,
+[data-baseweb="modal"] strong,
+[data-baseweb="modal"] em,
+[data-testid="stDialog"] p,
+[data-testid="stDialog"] label,
+[data-testid="stDialog"] span,
+[data-testid="stDialog"] div {{
+    color: var(--text-primary) !important;
+}}
+[data-baseweb="modal"] h1,
+[data-baseweb="modal"] h2,
+[data-baseweb="modal"] h3,
+[data-baseweb="modal"] h4,
+[data-baseweb="modal"] h5,
+[data-testid="stDialog"] h1,
+[data-testid="stDialog"] h2,
+[data-testid="stDialog"] h3,
+[data-testid="stDialog"] h4,
+[data-testid="stDialog"] h5 {{
+    color: var(--accent) !important;
+}}
+[data-baseweb="modal-backdrop"],
+div[data-baseweb="modal-backdrop"] {{
+    background-color: rgba(180,170,160,0.25) !important;
+    backdrop-filter: blur(14px) saturate(1.1) !important;
+}}
+[data-baseweb="modal"] .stButton > button,
+[data-testid="stDialog"] .stButton > button {{
+    background-color: var(--bg-surface) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}}
+[data-baseweb="modal"] .stButton > button:hover,
+[data-testid="stDialog"] .stButton > button:hover {{
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
+}}
+[data-baseweb="modal"] .stRadio label,
+[data-testid="stDialog"] .stRadio label {{
+    background: var(--bg-root) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border) !important;
+}}
+[data-baseweb="modal"] .stRadio label[data-selected="true"],
+[data-testid="stDialog"] .stRadio label[data-selected="true"] {{
+    background: var(--accent-bg) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}}
+[data-baseweb="modal"] .stSlider [data-baseweb="slider"] > div:first-child,
+[data-testid="stDialog"] .stSlider [data-baseweb="slider"] > div:first-child {{
+    background: var(--border) !important;
+}}
+[data-baseweb="modal"]::-webkit-scrollbar,
+[data-testid="stDialog"]::-webkit-scrollbar {{
+    width: 5px;
+}}
+[data-baseweb="modal"]::-webkit-scrollbar-track,
+[data-testid="stDialog"]::-webkit-scrollbar-track {{
+    background: var(--bg-surface);
+}}
+[data-baseweb="modal"]::-webkit-scrollbar-thumb,
+[data-testid="stDialog"]::-webkit-scrollbar-thumb {{
+    background: var(--scrollbar);
+    border-radius: 3px;
+}}
+
+/* ── Popover / portal containers ────────────────────── */
+[data-baseweb="layer"],
+[data-baseweb="popover"] [data-baseweb="popover"],
+div[data-baseweb="popover"] {{
+    background-color: var(--bg-surface) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] p,
+[data-baseweb="popover"] [data-baseweb="popover"] span,
+[data-baseweb="popover"] [data-baseweb="popover"] label,
+[data-baseweb="popover"] [data-baseweb="popover"] div,
+[data-baseweb="popover"] [data-baseweb="popover"] strong {{
+    color: var(--text-primary) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] label {{
+    background: var(--bg-root) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] label[data-selected="true"] {{
+    background: var(--accent-bg) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] [data-baseweb="slider"] {{
+    background: var(--border) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] .stButton > button:not(:disabled) {{
+    background-color: var(--bg-root) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}}
+[data-baseweb="popover"] [data-baseweb="popover"] .stButton > button:not(:disabled):hover {{
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
+}}
+
+/* Tooltip */
+[data-baseweb="tooltip"],
+[data-baseweb="tooltip"] * {{
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}}
+
+/* Toast */
+[data-baseweb="notification"],
+[data-baseweb="toast"] {{
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
 }}
 
 {light_overrides}

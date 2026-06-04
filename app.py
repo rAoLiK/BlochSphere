@@ -184,6 +184,37 @@ if controls["reset_clicked"]:
     st.session_state.chain_trigger += 1
     st.session_state.anim_trigger += 1
 
+# ── GIF Export ─────────────────────────────────────────────────────
+if controls["export_clicked"]:
+    from visualization import generate_bloch_gif
+
+    # Determine which mode has frame data
+    chain_frames = st.session_state.get("chain_frames", [])
+    single_frames = st.session_state.get("frames", [])
+
+    if chain_frames:
+        with st.spinner("Generating GIF (chain mode)…"):
+            gif_data = generate_bloch_gif(
+                chain_frames,
+                boundaries=st.session_state.chain_boundaries,
+                labels=st.session_state.chain_labels,
+            )
+        filename = "bloch_chain.gif"
+    elif single_frames:
+        with st.spinner("Generating GIF…"):
+            gif_data = generate_bloch_gif(single_frames)
+        filename = "bloch_gate.gif"
+    else:
+        st.warning("Apply a gate first, then export.")
+        gif_data = None
+
+    if gif_data:
+        st.session_state["gif_data"] = gif_data
+        st.session_state["gif_filename"] = filename
+        st.rerun()
+
+# Download button is rendered in controls.py (EXPORT section)
+
 # ── Tab layout ──────────────────────────────────────────────────────
 tab_single, tab_chain = st.tabs(["SINGLE GATE", "GATE CHAIN"])
 

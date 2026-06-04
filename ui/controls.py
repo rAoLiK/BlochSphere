@@ -111,6 +111,22 @@ def render_controls() -> dict:
     )
     st.sidebar.caption(f"Speed: {result['speed']:.2f}x")
 
+    st.sidebar.markdown("### EXPORT")
+    result["export_clicked"] = st.sidebar.button(
+        "EXPORT GIF", use_container_width=True
+    )
+
+    # Download button appears here when GIF data is ready
+    gif_data = st.session_state.get("gif_data")
+    if gif_data:
+        st.sidebar.download_button(
+            label="DOWNLOAD GIF",
+            data=gif_data,
+            file_name=st.session_state.get("gif_filename", "bloch.gif"),
+            mime="image/gif",
+            use_container_width=True,
+        )
+
     return result
 
 
