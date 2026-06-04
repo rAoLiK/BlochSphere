@@ -1062,6 +1062,38 @@ div[data-baseweb="popover"] {{
     color: #ffffff !important;
 }}
 
+/* Popover: radio buttons */
+[data-baseweb="popover"] .stRadio label,
+[data-baseweb="popover"] [data-baseweb="popover"] .stRadio label {{
+    background: var(--bg-root) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border) !important;
+}}
+[data-baseweb="popover"] .stRadio label[data-selected="true"],
+[data-baseweb="popover"] [data-baseweb="popover"] .stRadio label[data-selected="true"] {{
+    background: var(--accent-bg) !important;
+    color: var(--accent) !important;
+    border-color: var(--accent) !important;
+}}
+
+/* Popover: slider */
+[data-baseweb="popover"] .stSlider [data-baseweb="slider"] > div:first-child,
+[data-baseweb="popover"] [data-baseweb="popover"] .stSlider [data-baseweb="slider"] > div:first-child {{
+    background: var(--border) !important;
+}}
+
+/* Popover: caption / markdown text */
+[data-baseweb="popover"] .stCaption,
+[data-baseweb="popover"] [data-baseweb="popover"] .stCaption,
+[data-baseweb="popover"] p,
+[data-baseweb="popover"] [data-baseweb="popover"] p,
+[data-baseweb="popover"] span,
+[data-baseweb="popover"] [data-baseweb="popover"] span,
+[data-baseweb="popover"] label,
+[data-baseweb="popover"] [data-baseweb="popover"] label {{
+    color: var(--text-primary) !important;
+}}
+
 /* Tooltip */
 [data-baseweb="tooltip"],
 [data-baseweb="tooltip"] * {{
